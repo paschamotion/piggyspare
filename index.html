@@ -400,6 +400,12 @@ svg.chart .bar{transform-box:fill-box;transform-origin:50% 100%;animation:grow .
 .dl-stats .bk-stat.soon .n{color:var(--warn)}
 /* Finanzen: Glas, Verläufe, Übergänge ins Transparente */
 .fin-aura{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:#060304;animation:auraIn 1s ease-out both}
+/* Körnung (Film-Grain) über dem Hintergrund, damit er nicht flach wirkt; liegt über dem Glut-Schimmer, aber hinter allen Inhalten */
+.fin-grain{position:fixed;inset:-50%;z-index:-1;pointer-events:none;opacity:.32;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 -1.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:110px 110px}
+@keyframes grainShift{0%{transform:translate(0,0)}17%{transform:translate(-3%,2%)}33%{transform:translate(2%,-4%)}50%{transform:translate(-4%,-1%)}67%{transform:translate(3%,3%)}83%{transform:translate(-1%,4%)}100%{transform:translate(0,0)}}
+@media (prefers-reduced-motion:reduce){.fin-grain{animation:none}}
 .fin-aura::before,.fin-aura::after{content:"";position:absolute;border-radius:50%;pointer-events:none}
 .fin-aura::before{width:120vmax;height:120vmax;left:-35vmax;top:-60vmax;background:radial-gradient(closest-side,rgba(255,90,30,.15),rgba(200,40,20,.06) 45%,transparent 70%);animation:emberA 16s ease-in-out infinite alternate}
 .fin-aura::after{width:110vmax;height:110vmax;right:-55vmax;bottom:-50vmax;background:radial-gradient(closest-side,rgba(230,50,30,.12),rgba(255,120,40,.04) 50%,transparent 72%);animation:emberB 20s ease-in-out infinite alternate}
@@ -518,6 +524,17 @@ svg.chart .bar{transform-box:fill-box;transform-origin:50% 100%;animation:grow .
 .fin-gear{justify-self:end;background:none;border:0;padding:8px;margin-right:-6px;color:rgba(246,243,248,.85);display:grid;place-items:center}
 .fin-gear svg{width:22px;height:22px;stroke-width:1.5}
 .fin-gear:active{opacity:.6}
+.fin-menu-bg{position:fixed;inset:0;z-index:75;animation:fade .15s}
+/* Menü = eine einzige verschwommene Glasebene mit weich auslaufendem Rand (keine Kanten, keine Trennlinien) */
+.fin-menu{position:fixed;min-width:220px;padding:16px 18px;margin:-10px -12px 0 0;transform-origin:top right;animation:menuIn .18s cubic-bezier(.2,.8,.2,1);
+  background:rgba(14,8,9,.42);-webkit-backdrop-filter:blur(26px) saturate(1.2);backdrop-filter:blur(26px) saturate(1.2);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 16px,#000 calc(100% - 16px),transparent),linear-gradient(to bottom,transparent,#000 14px,#000 calc(100% - 14px),transparent);
+  -webkit-mask-composite:source-in;mask-image:linear-gradient(to right,transparent,#000 16px,#000 calc(100% - 16px),transparent),linear-gradient(to bottom,transparent,#000 14px,#000 calc(100% - 14px),transparent);
+  mask-composite:intersect}
+.fin-menu button{display:flex;align-items:center;gap:12px;width:100%;padding:11px 6px;border:0;border-radius:10px;background:none;color:var(--text);font-size:15px;text-align:left}
+.fin-menu button svg{width:19px;height:19px;stroke-width:1.6;color:rgba(246,243,248,.75)}
+.fin-menu button:active{opacity:.6}
+@keyframes menuIn{from{opacity:0;transform:scale(.92) translateY(-4px)}}
 .round .nb{position:absolute;top:-3px;right:-3px;min-width:19px;height:19px;padding:0 5px;border-radius:99px;background:#ff3b4e;color:#fff;font-size:11px;font-weight:600;display:grid;place-items:center;box-shadow:0 0 0 2px var(--bg)}
 /* Karte: festes Kartenformat (ISO 85,6 x 54 mm), Inhalt skaliert mit der Kartenbreite */
 .fc-wrap{position:relative;perspective:1000px;margin:12px auto 0;max-width:420px;touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none}
@@ -612,6 +629,12 @@ svg.chart .bar{transform-box:fill-box;transform-origin:50% 100%;animation:grow .
   background-size:300% 100%;background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent;
   filter:drop-shadow(0 0 1cqw rgba(255,255,255,.7));animation:goldGlint 1.3s cubic-bezier(.4,0,.2,1) infinite}
 .fc-amt.gold{color:rgba(255,255,255,0);text-shadow:none;transition:color .25s ease,text-shadow .25s ease}
+/* Entnahme: Zahlen zählen in Rot herunter */
+.fc-amt.down{color:#ff4d5e;text-shadow:0 0 14px rgba(255,60,80,.45);transition:color .2s ease,text-shadow .2s ease}
+.fc-amt.down .dec{color:rgba(255,77,94,.6);transition:color .2s ease}
+/* Graustufen-Ebene über dem Kartenhintergrund, aber unter Text/Chip */
+.fc-gray{position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:var(--gray,0);background:#7a7a7a;mix-blend-mode:saturation}
+.fc-gray::after{content:"";position:absolute;inset:0;border-radius:inherit;background:rgba(0,0,0,.28)}
 .fc-amt.gold .dec{color:rgba(255,255,255,0);transition:color .25s ease}
 .fc-amt.gold::after,.fc-amt.gold::before{opacity:1;transition:opacity .25s ease}
 @keyframes goldShine{from{background-position:200% 0}to{background-position:0 0}}
@@ -640,13 +663,19 @@ svg.chart .bar{transform-box:fill-box;transform-origin:50% 100%;animation:grow .
 .fc-acts button span{height:30px;display:grid;place-items:center;color:#fff;transition:transform .15s,opacity .15s}
 /* Einzahlen: Sparschwein mit Plus, hologrammartig schimmernd */
 .fc-acts button.fc-holo-act span{position:relative}
-.fc-acts button.fc-holo-act span::before{content:"";position:absolute;width:46px;height:46px;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;z-index:-1;
+.fc-acts button.fc-holo-act{color:#fff}
+/* Überschrift „Sparziele“: dezent, mit Pokal-Symbol */
+.fin .section-h.sz-h{align-items:center}
+.fin .section-h.sz-h span:first-child{display:inline-flex;align-items:center;gap:7px;font-size:15px;font-weight:400;letter-spacing:.3px;
+  background:none;-webkit-background-clip:border-box;background-clip:border-box;color:rgba(246,243,248,.6)}
+.fin .section-h.sz-h span:first-child svg{width:16px;height:16px;stroke-width:1.5;color:#ffc069}
+.fin .section-h.sz-h::after{opacity:.5}
+.fc-acts button.fc-holo-act span::before{content:"";position:absolute;width:34px;height:34px;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;z-index:-1;
   background:conic-gradient(from var(--ha2,0deg),rgba(255,122,198,.28),rgba(138,123,255,.24),rgba(82,227,225,.26),rgba(185,255,134,.22),rgba(255,215,112,.26),rgba(255,122,198,.28));
-  filter:blur(9px);animation:holoSpin 4s linear infinite}
+  filter:blur(7px);animation:holoSpin 4s linear infinite}
 .fc-acts button.fc-holo-act svg{width:27px;height:27px;stroke-width:1.5}
 .fc-acts button.fc-holo-act em{font-style:normal;font-weight:500;
-  background:linear-gradient(100deg,#ff9ad5,#b392ff 22%,#5fe4ff 42%,#7dffb5 60%,#fff07a 78%,#ff9ad5);background-size:220% 100%;
-  -webkit-background-clip:text;background-clip:text;color:transparent;animation:holoText 3.2s linear infinite}
+}
 @property --ha2{syntax:'<angle>';inherits:false;initial-value:0deg}
 @keyframes holoSpin{to{--ha2:360deg}}
 @keyframes holoText{from{background-position:220% 0}to{background-position:0 0}}
@@ -696,6 +725,64 @@ svg.vlc text{fill:rgba(246,243,248,.45);font:10.5px "Outfit",sans-serif}
 svg.vlc .ln{fill:none;stroke:#fff;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.2s ease-out forwards;filter:drop-shadow(0 0 6px rgba(255,255,255,.35))}
 svg.vlc .ar{animation:fade 1.2s ease-out both}
 @media (prefers-reduced-motion:reduce){svg.vlc .ln{animation:none;stroke-dashoffset:0}}
+/* Buchungs-Popup: gleitet von unten herein, Hintergrund abgedunkelt und verschwommen */
+/* Hintergrund verschwommen und leicht abgedunkelt – nur die Karte bleibt scharf obenauf */
+.tx-pop-bg{position:fixed;inset:0;z-index:72;display:flex;flex-direction:column;justify-content:flex-end;
+  background:rgba(6,3,4,.32);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:fade .2s ease-out}
+body.tx-open .fc-wrap{z-index:73}
+.tx-pop{position:relative;width:100%;max-width:560px;margin:0 auto;padding:4px 16px calc(14px + env(safe-area-inset-bottom));border-radius:26px 26px 0 0;
+  background:rgba(18,10,11,.74);box-shadow:inset 0 0 22px rgba(255,255,255,.03),0 -10px 30px rgba(0,0,0,.35);
+  -webkit-backdrop-filter:blur(22px) saturate(1.2);backdrop-filter:blur(22px) saturate(1.2);animation:txUp .32s cubic-bezier(.2,.9,.25,1)}
+.tx-pop .amt-input{font-size:42px;padding-top:4px}
+.tx-pop .amt-sub{font-size:12px;margin-bottom:2px}
+.tx-pop .quick{margin:8px 0 2px}
+.tx-pop .quick button{height:32px}
+.tx-pop .fgroup{margin-top:10px;background:rgba(255,255,255,.035)}
+.tx-pop .field{min-height:46px}
+.tx-head{min-height:42px!important}
+.tx-head .btn-text.right{min-width:64px}
+.tx-x{min-width:64px;height:40px;display:flex;align-items:center;background:none;border:0;padding:0;color:rgba(246,243,248,.8)}
+.tx-x svg{width:24px;height:24px;stroke-width:1.8}
+.tx-x:active{opacity:.6}
+/* Einzahlung/Entnahme: schmales Glas mit warmem Verlauf wie auf der Startseite */
+.tx-seg-w{display:flex;justify-content:center;margin-top:2px}
+.tx-seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:none}
+.tx-seg button{height:26px;padding:0 13px;border:0;border-radius:999px;background:none;color:rgba(246,243,248,.55);font-size:12.5px;font-weight:500}
+.tx-seg button.on{color:#fff;background:linear-gradient(135deg,rgba(255,154,46,.42),rgba(232,52,28,.32));box-shadow:0 0 14px 1px rgba(255,110,40,.45),inset 0 0 10px rgba(255,170,110,.25)}
+/* Betrag: groß und auffällig, mit +/− Umschalter links */
+.tx-amt-row{position:relative;display:flex;align-items:center;justify-content:center}
+.tx-pop .amt-input{font-size:58px;font-weight:600;letter-spacing:-1.5px;padding:6px 44px 0;color:#fff;text-shadow:0 0 22px rgba(255,170,90,.35)}
+.tx-pop .amt-input::placeholder{color:rgba(246,243,248,.22);text-shadow:none}
+.tx-pop .amt-input.bump{animation:amtBump .28s cubic-bezier(.2,1.4,.4,1)}
+@keyframes amtBump{40%{transform:scale(1.06)}}
+.tx-sign{position:absolute;left:2px;top:50%;transform:translateY(-35%);width:34px;height:34px;border-radius:50%;border:0;font-size:20px;font-weight:500;line-height:1;
+  color:#fff;background:linear-gradient(135deg,rgba(255,154,46,.4),rgba(232,52,28,.3));box-shadow:inset 0 0 0 1px rgba(255,190,140,.25)}
+.tx-sign.minus{background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+.tx-sign:active{transform:translateY(-35%) scale(.9)}
+/* Stufen kompakter */
+.tx-pop .quick{gap:5px!important;margin:6px 0 0!important}
+.tx-pop .quick button{height:28px!important;padding:0 6px!important;font-size:12.5px!important;border-radius:999px}
+.tx-head h1{font-size:15px!important;color:rgba(246,243,248,.75)}
+.tx-grip{width:40px;height:5px;border-radius:9px;background:rgba(255,255,255,.22);margin:4px auto 2px}
+.tx-head{display:flex;align-items:center;min-height:48px}
+.tx-head h1{flex:1;margin:0;text-align:center;font-size:17px;font-weight:500}
+.tx-pop .fgroup{margin-bottom:4px}
+.tx-pop .quick{gap:6px;flex-wrap:nowrap}
+.tx-pop .quick button{padding:0 10px;font-size:14px;flex:1 1 auto;min-width:0}
+.tx-pop-bg.closing{animation:fadeOut .23s ease-in forwards}
+.tx-pop-bg.closing .tx-pop{animation:txDown .23s ease-in forwards}
+@keyframes txUp{from{transform:translateY(100%)}}
+@keyframes txDown{to{transform:translateY(100%)}}
+@keyframes fadeOut{to{opacity:0}}
+body.tx-open{overflow:hidden}
+/* Währungsauswahl im Profil */
+.pf-cur-l{margin:22px 0 8px;text-align:center;color:var(--muted);font-size:13px;letter-spacing:.4px}
+.pf-cur{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.pf-cur button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.pf-cur button b{font-size:17px;font-weight:600}
+.pf-cur button span{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pf-cur button.on{background:#fff;color:#140c0a;border-color:#fff}
+.pf-cur button.on span{color:rgba(20,12,10,.6)}
 /* Belohnungen */canvas.confetti{position:fixed;inset:0;width:100%;height:100%;z-index:90;pointer-events:none}
 .cheer{position:fixed;left:50%;top:38%;z-index:91;transform:translate(-50%,-50%);text-align:center;pointer-events:none;animation:cheer 2.2s cubic-bezier(.2,.8,.2,1) forwards}
 .cheer b{display:block;font-size:64px;font-weight:600;letter-spacing:-2px;background:linear-gradient(135deg,#9ff0c8,#fff 40%,#f6a8d8);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 24px rgba(217,70,143,.6))}
@@ -744,7 +831,7 @@ body::before{background:
 <script>
 'use strict';
 // Bei jeder neuen Version erhöhen – daran erkennt die App, dass es ein Update gibt.
-const APP_VERSION = '2026.11.23-15';
+const APP_VERSION = '2026.11.23-41';
 /* ---------- Helfer ---------- */
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -780,6 +867,7 @@ const LUCIDE = {
   'trash-2': '<path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" />',
   'chevron-left': '<path d="m15 18-6-6 6-6" />',
   'chevron-right': '<path d="m9 18 6-6-6-6" />',
+  'chevron-down': '<path d="m6 9 6 6 6-6" />',
   'x': '<path d="M18 6 6 18" /><path d="m6 6 12 12" />',
   'rotate-cw': '<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" />',
   'check': '<path d="M20 6 9 17l-5-5" />',
@@ -837,6 +925,7 @@ const LUCIDE = {
   'activity': '<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" />',
   'chart-column': '<path d="M3 3v16a2 2 0 0 0 2 2h16" /><path d="M18 17V9" /><path d="M13 17V5" /><path d="M8 17v-3" />',
   'trending-down': '<polyline points="22 17 13.5 8.5 8.5 13.5 2 7" /><polyline points="16 17 22 17 22 11" />',
+  'menu': '<line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" />',
   'clock': '<circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />',
 };
 
@@ -986,22 +1075,35 @@ views.onboarding = ({step}) => {
 };
 views.profile = () => profileForm(false);
 let pfDraft = null;
+// Währung: wird beim ersten Start im Profil gewählt (später im Profil änderbar)
+const CURRENCIES = [['EUR', '€', 'Euro'], ['USD', '$', 'US-Dollar'], ['CHF', 'CHF', 'Franken'], ['GBP', '£', 'Pfund'],
+  ['PLN', 'zł', 'Złoty'], ['TRY', '₺', 'Lira'], ['CZK', 'Kč', 'Krone'], ['SEK', 'kr', 'Kronor']];
+const CUR = () => S.profile?.currency || 'EUR';
+const curSym = () => (CURRENCIES.find(c => c[0] === CUR()) || CURRENCIES[0])[1];
 function profileForm(first) {
   if (!pfDraft) pfDraft = {name: S.profile?.name || '', photo: S.profile?.photo || ''};
+  if (!pfDraft.currency) pfDraft.currency = S.profile?.currency || 'EUR';
   setView(`
   ${first ? '' : `<header class="top"><button class="btn-text" data-act="back">${ICON.back}Zurück</button><h1>Profil</h1><button class="btn-text right strong" data-act="saveProfile">Speichern</button></header>`}
   <div class="onb${first ? '' : ' onb-edit'}">
     ${first ? `<div class="onb-step">Schritt 2 von 2</div><h1 class="onb-h2">Wie heißt du?</h1>
-      <p class="onb-p">Gib dir einen Namen und, wenn du magst, ein Profilbild. Beides bleibt nur auf diesem Gerät.</p>` : ''}
+      <p class="onb-p">Gib dir einen Namen, ein Profilbild und wähle deine Währung. Alles bleibt nur auf diesem Gerät.</p>` : ''}
     <button class="pf-av" data-act="pickAvatar" aria-label="Profilbild wählen">${pfDraft.photo ? `<img src="${pfDraft.photo}" alt="">` : lucide('user', 'i pf-user')}<span class="pf-badge">${ICON.camera}</span></button>
     <button class="skip" data-act="${pfDraft.photo ? 'removeAvatar' : 'pickAvatar'}">${pfDraft.photo ? 'Bild entfernen' : 'Profilbild wählen'}</button>
     <input class="pf-input" id="pfName" value="${esc(pfDraft.name)}" placeholder="Dein Name" maxlength="40" autocomplete="given-name" enterkeyhint="done">
+    <div class="pf-cur-l">Währung</div>
+    <div class="pf-cur" role="radiogroup" aria-label="Währung">${CURRENCIES.map(([c, s, n]) => `<button type="button" role="radio" aria-checked="${c === pfDraft.currency}" class="${c === pfDraft.currency ? 'on' : ''}" data-cur="${c}"><b>${s}</b><span>${n}</span></button>`).join('')}</div>
     ${first ? `<div class="cta" style="margin-top:auto;padding-top:40px"><button class="go" data-act="saveProfile">Fertig</button><button class="arrow" data-act="saveProfile" aria-label="Fertig">${ICON.arrow}</button></div>
       <button class="skip" data-act="skipProfile">Später</button>` : ''}
   </div>`);
   const inp = $('#pfName');
   inp.addEventListener('input', () => { pfDraft.name = inp.value; });
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
+  app.querySelector('.pf-cur').addEventListener('click', e => {
+    const b = e.target.closest('[data-cur]'); if (!b) return;
+    pfDraft.currency = b.dataset.cur;
+    app.querySelectorAll('.pf-cur [data-cur]').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-checked', x === b); });
+  });
 }
 // Profilbild: quadratisch zuschneiden, verkleinern, als Bild-Daten speichern
 async function avatarFromFile(file) {
@@ -1011,7 +1113,7 @@ async function avatarFromFile(file) {
   return c.toDataURL('image/jpeg', .85);
 }
 async function saveProfileData(name, photo) {
-  S.profile = {id: '__profile', name, photo, done: true};
+  S.profile = {id: '__profile', name, photo, currency: pfDraft?.currency || S.profile?.currency || 'EUR', done: true};
   await dbPut('blobs', S.profile);
   pfDraft = null;
 }
@@ -1024,7 +1126,7 @@ const pad2 = n => String(n).padStart(2, '0');
 const monthKey = (d = new Date()) => localISO(d).slice(0, 7);
 function addMonths(key, n) { const [y, m] = key.split('-').map(Number), d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; }
 const monthName = (key, long) => new Date(key + '-01T00:00').toLocaleDateString('de-DE', long ? {month: 'long', year: 'numeric'} : {month: 'short'}).replace('.', '');
-const eur = (v, dec) => { v = Math.round((v || 0) * 100) / 100; const d = dec ?? (v % 1 ? 2 : 0); return v.toLocaleString('de-DE', {style: 'currency', currency: 'EUR', minimumFractionDigits: d, maximumFractionDigits: d}); };
+const eur = (v, dec) => { v = Math.round((v || 0) * 100) / 100; const d = dec ?? (v % 1 ? 2 : 0); return v.toLocaleString('de-DE', {style: 'currency', currency: CUR(), minimumFractionDigits: d, maximumFractionDigits: d}); };
 // „1.578,00 €“ mit abgedunkelten Cent wie auf einer Bankkarte
 const eurSplit = v => { const s = eur(v, 2), i = s.lastIndexOf(','); return `${s.slice(0, i)}<span class="dec">${s.slice(i)}</span>`; };
 function parseAmount(s) { s = String(s || '').replace(/[€\s]/g, ''); if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.'); const v = parseFloat(s); return isFinite(v) ? Math.round(v * 100) / 100 : 0; }
@@ -1230,7 +1332,7 @@ function verlaufHtml() {
   const mk = Array.from({length: months}, (_, i) => addMonths(now, i - months + 1));
   S.vlPts = pts;
   return `<div class="vl" id="vl">
-    <div class="vl-h"><span class="vl-coin">${lucide('piggy-bank')}</span>Gespart gesamt <small>EUR</small></div>
+    <div class="vl-h"><span class="vl-coin">${lucide('piggy-bank')}</span>Gespart gesamt <small>${CUR()}</small></div>
     <div class="vl-amt" id="vlHead">${vlHead(pts[pts.length - 1].v, pts[0].v)}</div>
     <div class="vl-bar">
       <div class="vl-tabs">${VL_RANGES.map(([k]) => `<button class="${k === range ? 'on' : ''}" data-act="vlRange" data-v="${k}">${k}</button>`).join('')}</div>
@@ -1271,10 +1373,7 @@ function barChart(keys, vals) {
 // Zahlen hochzählen lassen (vom zuletzt gezeigten Wert aus)
 S.shown = {};
 // Einzahlen-Symbol: Lucide-Sparschwein mit Plus auf dem Bauch, Linien mit wanderndem Hologramm-Verlauf
-const PIGGY_PLUS = `<svg class="i" viewBox="0 0 24 24" fill="none" stroke="url(#holoG)" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <defs><linearGradient id="holoG" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="#ff9ad5"/><stop offset=".25" stop-color="#b392ff"/><stop offset=".5" stop-color="#5fe4ff"/><stop offset=".75" stop-color="#7dffb5"/><stop offset="1" stop-color="#fff07a"/>
-    <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="360 .5 .5" dur="4s" repeatCount="indefinite"/></linearGradient></defs>
+const PIGGY_PLUS = `<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/>
   <path d="M2 9v1c0 1.1.9 2 2 2h1"/><path d="M16.5 10.5h.01"/><path d="M11 10v5M8.5 12.5h5"/></svg>`;
 
@@ -1308,10 +1407,13 @@ function countUp() {
     // Karte: langsamer hochzählen, währenddessen in metallischem Gold-Verlauf (danach weich zurück zu Weiß)
     const t0 = performance.now(), dur = +el.dataset.dur || 1200;
     const card = el.closest('.fcard');
-    if (el.dataset.gold) { clearTimeout(el._goldT); show(from); el.classList.add('gold'); if (card) card._boost = true; }
+    const down = known && to < from; // Entnahme
+    if (el.dataset.gold && !down) { clearTimeout(el._goldT); show(from); el.classList.add('gold'); if (card) card._boost = true; }
+    if (el.dataset.gold && down && card) { show(from); card._down = true; clearTimeout(el._redT); el.classList.add('down'); }
     const step = now => { const q = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - q, 3);
       show(q < 1 ? Math.round(from + (to - from) * e) : to);
       if (q < 1 && el.isConnected) requestAnimationFrame(step);
+      else if (el.dataset.gold && down) { if (card) setTimeout(() => { card._down = false; }, 500); el._redT = setTimeout(() => el.classList.remove('down'), 700); }
       else if (el.dataset.gold) {
         // „+Betrag“ und Partikel nur nach einer echten Einzahlung, nicht beim Öffnen der App
         if (card) { card._boost = false; if (known && to > from) cardBurst(card, to - from); }
@@ -1371,7 +1473,7 @@ function reward(r) {
         ms === 100 ? 2.2 : 1.4, () => showBadges(200));
       return;
     }
-    confetti(); cheer(r.t.amount); showBadges(2400);
+    confetti(); showBadges(2400); // kein grosses „+Betrag“ mit Spruch mehr – der Betrag erscheint auf der Karte
   } else showBadges(0);
 }
 
@@ -1431,15 +1533,15 @@ views.finance = () => {
   const months = keys12.map((k, i) => ({k, in: monthSum(k), sum: cum[i]})).filter(r => r.in !== 0 || r.k === now).reverse();
   const recent = [...S.fin.tx].sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.created - a.created).slice(0, 8);
   const has = S.fin.tx.length > 0;
-  setView(`<div class="fin-aura"></div>
+  setView(`<div class="fin-aura"></div><div class="fin-grain"></div>
   <header class="hero fin-head">
     <div class="fin-brand">${lucide('piggy-bank')}<span>PiggySpare</span></div>
-    <button class="fin-welcome" data-act="openProfile" aria-label="Profil">Welcome${S.profile?.name ? `, <b>${esc(S.profile.name)}</b>` : ''}
+    <button class="fin-welcome" data-act="openProfile" aria-label="Profil">Welcome
       <span class="fin-av">${S.profile?.photo ? `<img src="${S.profile.photo}" alt="">` : lucide('user')}</span></button>
-    <button class="fin-gear" data-act="navSettings" aria-label="Einstellungen">${ICON.gear}</button>
+    <button class="fin-gear" data-act="openMenu" aria-label="Menü">${lucide('menu')}</button>
   </header>
   <div class="wrap fin${finAnim()}">
-    <div class="fc-wrap"><div class="fcard" id="fcard"><span class="fc-shine">${Array.from({length: 14}, () => `<i style="left:${(15 + Math.random() * 70).toFixed(1)}%;top:${(15 + Math.random() * 70).toFixed(1)}%;--s:${(1 + Math.random() * 2.2).toFixed(1)}px;animation-delay:${(Math.random() * 3.2).toFixed(2)}s;animation-duration:${(2.4 + Math.random() * 2).toFixed(2)}s"></i>`).join('')}</span><span class="fc-idholo"></span><span class="fc-bigpig" style="--pig:${PIG_HOLO}"></span><span class="fc-chrome"></span><span class="fc-glare"></span>
+    <div class="fc-wrap"><div class="fcard" id="fcard"><span class="fc-shine">${Array.from({length: 14}, () => `<i style="left:${(15 + Math.random() * 70).toFixed(1)}%;top:${(15 + Math.random() * 70).toFixed(1)}%;--s:${(1 + Math.random() * 2.2).toFixed(1)}px;animation-delay:${(Math.random() * 3.2).toFixed(2)}s;animation-duration:${(2.4 + Math.random() * 2).toFixed(2)}s"></i>`).join('')}</span><span class="fc-idholo"></span><span class="fc-gray"></span><span class="fc-bigpig" style="--pig:${PIG_HOLO}"></span><span class="fc-chrome"></span><span class="fc-glare"></span>
       <div class="fc-top"><span>Gespart insgesamt</span>${lucide('piggy-bank', 'i fc-logo')}</div>
       <div class="fc-amt" data-count="${total}" data-key="total" data-split="1" data-dur="2000" data-gold="1" data-g="${eur(total, 2)}">${eurSplit(total)}</div>
       <div class="fc-row"><div class="fc-chip"><i></i><i></i><i></i><b class="fc-chip-holo"></b></div></div>
@@ -1460,7 +1562,7 @@ views.finance = () => {
     </div>
     ${pend.length ? `<div class="section-h" id="rates"><span>Fällige Sparraten</span></div><div class="list">${pend.map(rateRow).join('')}</div>` : ''}
 
-    <div class="section-h"><span>Sparziele</span>${S.fin.goals.length ? `<button class="add-btn" data-go="goalEdit">${ICON.plus}Neu</button>` : ''}</div>
+    <div class="section-h sz-h"><span>${lucide('trophy')}Sparziele</span>${S.fin.goals.length ? `<button class="add-btn" data-go="goalEdit">${ICON.plus}Neu</button>` : ''}</div>
     ${goals.length ? `<div class="gtiles">${goals.map(goalCard).join('')}</div>`
       : `<div class="empty">${emptyIcon('piggy-bank')}Wofür möchtest du sparen?<br>Urlaub, neues Handy, Notgroschen …
          <div class="btns"><button class="btn primary" data-go="goalEdit">${lucide('target')} Erstes Sparziel setzen</button></div></div>`}
@@ -1534,7 +1636,9 @@ function cardMotion(card) {
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches, MY = 32, MX = 26;
   const soft = (v, m) => Math.sign(v) * m * Math.tanh(Math.abs(v) / m); // weicher Anschlag statt harter Grenze
   let ry = 0, rx = 0, vy = 0, vx = 0, pz = 0, vz = 0, tapT = 0, drag = null, lastT = performance.now(), t0 = lastT;
-  let taps = 0, lastTap = 0, spin = null, spinPrev = 0, boostV = 0, ph = 0;
+  let taps = 0, lastTap = 0, spin = null, spinPrev = 0, boostV = 0, ph = 0, menuV = 0, downV = 0, txV = 0, hopY = 0;
+  // Nach einer Einzahlung: Karte springt hoch, dreht sich einmal mit Schwung um 360°, landet federnd und stellt sich wieder hin
+  card._celebrate = () => { if (still) return; spin = {t0: performance.now(), axis: 'y', dir: 1, cele: true, dur: 1350}; };
   const SPIN_MS = 1100, ease = u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
   const wrap = card.parentElement;
   wrap.addEventListener('pointerdown', e => {
@@ -1575,18 +1679,37 @@ function cardMotion(card) {
       vz += (-pz * .04 - vz * .14) * h; pz += vz * h;
     }
     // Während der Betrag hochzählt (card._boost = 1): Karte nach oben geneigt, damit die Hologramme sichtbar werden, und schnelleres Wackeln
-    boostV += ((card._boost ? 1 : 0) - boostV) * Math.min(1, .06 * e);
+    boostV += ((card._boost && !spin?.cele ? 1 : 0) - boostV) * Math.min(1, .06 * e); // Neigung erst nach der Feier-Drehung
+    // Menü offen (card._menu): Karte dreht sich zur linken Seite, kippt leicht schräg nach hinten; beim Schließen gleitet sie zurück
+    menuV += ((card._menu ? 1 : 0) - menuV) * Math.min(1, .09 * e);
+    const mE = menuV * menuV * (3 - 2 * menuV);
+    // Entnahme (card._down): Karte wird grau, sinkt etwas ab und wird kleiner, danach zurueck
+    downV += ((card._down ? 1 : 0) - downV) * Math.min(1, .07 * e);
+    const dE = downV * downV * (3 - 2 * downV);
+    // Buchungs-Popup offen (card._tx): Karte nach hinten geneigt (Hologramme sichtbar) und schwingt im Loop nach links und rechts.
+    // Die Bewegung wird zur Finger-Neigung addiert – man kann die Karte weiterhin ziehen, antippen und drehen.
+    txV += ((card._tx ? 1 : 0) - txV) * Math.min(1, .06 * e);
+    const tE = txV * txV * (3 - 2 * txV), sway = still ? 0 : Math.sin((now - t0) / 1000 * 1.15) * 17;
     ph += (now - (frame.last || now)) / 1000 * (1 + boostV * 1.8); frame.last = now;
     const t = ph, idle = still || dragging ? 0 : 1, amp = 1 + boostV * .7;
     const wy = Math.sin(t * 1.1) * 3.2 * idle * amp, wx = Math.cos(t * .8) * 2.2 * idle * amp, wz = Math.sin(t * .9 + 1) * .5 * idle;
-    const X = rx + wx + boostV * 12 * (still ? 0 : 1), Y = ry + wy;
+    const X = rx + wx + boostV * 12 * (still ? 0 : 1) + mE * 10 + tE * 11, Y = ry + wy - mE * 22 + tE * sway;
     // 360°-Drehung: Winkel kommt zur Neigung dazu; zwischen 90° und 270° ist die Rückseite zu sehen
     let S360 = 0, spinScale = 1, axis = 'y';
     if (spin) {
-      const u = Math.min((now - spin.t0) / SPIN_MS, 1); axis = spin.axis; S360 = ease(u) * 360 * spin.dir;
+      // Feier-Drehung: steilere Kurve (Quintic) – die Rückseite huscht nur kurz vorbei (ca. 1/8 der Zeit statt 1/5)
+      const u = Math.min((now - spin.t0) / (spin.dur || SPIN_MS), 1); axis = spin.axis;
+      const eu = spin.cele ? (u < .5 ? 16 * u ** 5 : 1 - (-2 * u + 2) ** 5 / 2) : ease(u);
+      S360 = eu * 360 * spin.dir;
       // während der Drehung kleiner werden, danach wieder groß (mit kurzem Nachfedern über 100 %)
       spinScale = 1 - .22 * Math.sin(Math.PI * Math.min(u / .75, 1)) + .06 * Math.sin(Math.PI * clamp((u - .7) / .3, 0, 1));
-      if (u >= 1) { spin = null; S360 = 0; spinScale = 1; }
+      hopY = 0;
+      if (spin.cele) { // Feier-Variante: kleiner werden (bleibt im Bildschirm), leichter Sprung, weich zurück
+        const k = Math.sin(Math.PI * u);
+        spinScale = 1 - .24 * k * k * (3 - 2 * k);
+        hopY = -k * 12;
+      }
+      if (u >= 1) { if (spin.cele) { vz -= 3; } spin = null; S360 = 0; spinScale = 1; hopY = 0; }
     }
     const spinV = Math.abs(S360 - spinPrev) / Math.max(e, .5); spinPrev = S360;
     const SX = axis === 'x' ? S360 : 0, SY = axis === 'y' ? S360 : 0;
@@ -1594,10 +1717,11 @@ function cardMotion(card) {
     const backY = ay > 90 && ay < 270, backX = ax > 90 && ax < 270;
     card.classList.toggle('back', backY !== backX); card.classList.toggle('bx', backX && !backY);
     const speed = Math.hypot(vx, vy) + spinV * .35;
-    const blur = speed > 1.2 ? Math.min((speed - 1.2) * .14, 1.6) : 0;
-    const sc = (1 + clamp(pz, -26, 10) * .003) * spinScale;
-    card.style.transform = `translateZ(${(pz * 3).toFixed(1)}px) rotateX(${(X + SX).toFixed(2)}deg) rotateY(${(Y + SY).toFixed(2)}deg) rotateZ(${wz.toFixed(2)}deg) scale(${sc.toFixed(4)})`;
+    const blur = spin?.cele ? Math.min(spinV * .42, 3.4) : speed > 1.2 ? Math.min((speed - 1.2) * .14, 1.6) : 0; // Bewegungsunschärfe, bei der Feier-Drehung kräftiger
+    const sc = (1 + clamp(pz, -26, 10) * .003) * spinScale * (1 - mE * .05) * (1 - dE * .08);
+    card.style.transform = `translateX(${(-mE * 4).toFixed(2)}%) translateY(${(dE * 14 + hopY).toFixed(1)}px) translateZ(${(pz * 3 - mE * 30).toFixed(1)}px) rotateX(${(X + SX).toFixed(2)}deg) rotateY(${(Y + SY).toFixed(2)}deg) rotateZ(${(wz - mE * 4).toFixed(2)}deg) scale(${sc.toFixed(4)})`;
     card.style.filter = blur > .1 ? `blur(${blur.toFixed(2)}px)` : '';
+    card.style.setProperty('--gray', dE.toFixed(3)); // Entnahme: Karte grau (Ebene hinter der Schrift, damit die roten Zahlen farbig bleiben)
     // Leuchten im Hintergrund: unten gedämpft, rundum am Kartenrand bleibt ein Glühen
     card.style.boxShadow = `${(-Y * .4).toFixed(1)}px ${(14 + X * .4 + pz * .5).toFixed(1)}px 36px -20px rgba(255,70,20,.3),0 0 18px -6px rgba(255,90,30,.45),inset 0 1px 0 rgba(255,255,255,.12)`;
     card.style.setProperty('--gx', `${(Y * 1.6).toFixed(1)}%`); card.style.setProperty('--gy', `${(-X * 2).toFixed(1)}%`);
@@ -1624,7 +1748,7 @@ views.goal = ({id}) => {
   const list = S.fin.tx.filter(t => t.goalId === id).sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.created - a.created);
   const monthsLeft = g.due ? Math.max(1, (new Date(g.due).getFullYear() - new Date().getFullYear()) * 12 + new Date(g.due).getMonth() - new Date().getMonth()) : 0;
   const need = g.due && rest > 0 ? rest / monthsLeft : 0;
-  setView(`<div class="fin-aura"></div>
+  setView(`<div class="fin-aura"></div><div class="fin-grain"></div>
   <header class="top fin-top"><button class="btn-text" data-act="back">${ICON.back}Übersicht</button><h1></h1>
     <button class="btn-text right" data-go="goalEdit" data-id="${id}">Bearbeiten</button></header>
   <h1 class="big-title title-ico">${folderIcon(g, 46)}<span>${esc(g.name)}</span></h1>
@@ -1658,17 +1782,17 @@ views.goalEdit = ({id}) => {
   setView(`
   <header class="top"><button class="btn-text" data-act="back">Abbrechen</button><h1>${id ? 'Ziel bearbeiten' : 'Neues Sparziel'}</h1>
     <button class="btn-text right strong" data-act="saveGoal" data-id="${id || ''}">Speichern</button></header>
-  <div class="wrap fin"><div class="fin-aura"></div><form id="gForm" autocomplete="off" onsubmit="return false">
+  <div class="wrap fin"><div class="fin-aura"></div><div class="fin-grain"></div><form id="gForm" autocomplete="off" onsubmit="return false">
     <div style="display:grid;place-items:center;margin-top:10px"><div id="gPrev">${folderIcon(st, 80)}</div></div>
     <div class="fgroup">
       <label class="field"><span>Wofür?</span><input name="name" value="${esc(g.name)}" placeholder="z. B. Urlaub"></label>
-      <label class="field"><span>Zielbetrag</span><input name="target" inputmode="decimal" value="${amtStr(g.target)}" placeholder="0 €"></label>
+      <label class="field"><span>Zielbetrag</span><input name="target" inputmode="decimal" value="${amtStr(g.target)}" placeholder="0 ${curSym()}"></label>
       <label class="field"><span>Bis wann?</span><input type="date" name="due" value="${esc(g.due || '')}"></label>
     </div>
     <p class="hint" id="gNeed"></p>
     <div class="section-h"><span>Sparplan</span></div>
     <div class="fgroup">
-      <label class="field"><span>Monatlich</span><input name="pAmount" inputmode="decimal" value="${amtStr(p.amount)}" placeholder="0 €"></label>
+      <label class="field"><span>Monatlich</span><input name="pAmount" inputmode="decimal" value="${amtStr(p.amount)}" placeholder="0 ${curSym()}"></label>
       <label class="field"><span>Am</span><select name="pDay">${Array.from({length: 28}, (_, i) => `<option value="${i + 1}" ${(p.day || 1) === i + 1 ? 'selected' : ''}>${i + 1}. des Monats</option>`).join('')}</select></label>
       <label class="field"><span>Verbuchen</span><select name="pAuto"><option value="">selbst bestätigen</option><option value="1" ${p.auto ? 'selected' : ''}>automatisch (Dauerauftrag)</option></select></label>
     </div>
@@ -1704,35 +1828,59 @@ views.goalEdit = ({id}) => {
   if (!id) setTimeout(() => form.name.focus(), 50);
 };
 
-views.txEdit = ({id, kind: k0}) => {
+// Buchung als Popup (Bottom-Sheet) über der aktuellen Seite statt eigener Seite
+let txKind = 'in';
+function openTxSheet(id, k0) {
+  closeTxSheet(true);
   const g0 = goalById(id), opts = S.fin.goals.map(g => `<option value="${g.id}" ${g.id === g0?.id ? 'selected' : ''}>${esc(g.name)}</option>`).join('');
-  setView(`
-  <header class="top"><button class="btn-text" data-act="back">Abbrechen</button><h1>Buchung</h1>
-    <button class="btn-text right strong" data-act="saveTx">Sichern</button></header>
-  <div class="wrap fin"><div class="fin-aura"></div><form id="tForm" autocomplete="off" onsubmit="return false">
-    <div style="display:flex;justify-content:center;margin-top:8px"><span class="seg" style="padding:4px">
-      <button type="button" class="on" data-kind="in" style="width:auto;padding:0 16px;height:32px">Einzahlung</button>
-      <button type="button" data-kind="out" style="width:auto;padding:0 16px;height:32px">Entnahme</button></span></div>
-    <input class="amt-input" name="amount" inputmode="decimal" placeholder="0 €" value="${g0?.plan?.amount ? amtStr(g0.plan.amount) : ''}">
-    <div class="amt-sub" id="tSub">wird deinem Ersparten gutgeschrieben</div>
-    <div class="quick">${[10, 25, 50, 100, 250].map(v => `<button type="button" data-q="${v}">+${v} €</button>`).join('')}</div>
-    <div class="fgroup">
-      <label class="field"><span>Ziel</span><select name="goal">${S.fin.goals.length ? `<option value="" ${g0 ? '' : 'selected'}>Auf alle Sparziele verteilen</option>` : ''}${opts}${S.fin.goals.length ? '' : '<option value="">Allgemein (ohne Ziel)</option>'}</select></label>
-      <label class="field"><span>Datum</span><input type="date" name="date" value="${localISO()}"></label>
-      <label class="field"><span>Notiz</span><input name="note" placeholder="optional"></label>
-    </div>
-  </form></div>`);
-  const form = $('#tForm'); let kind = 'in';
+  const m = document.createElement('div'); m.className = 'tx-pop-bg';
+  m.innerHTML = `<div class="tx-pop" role="dialog" aria-label="Buchung">
+    <div class="tx-grip"></div>
+    <header class="tx-head"><button class="tx-x" data-act="closeTx" aria-label="Schließen">${lucide('chevron-down')}</button><h1>Buchung</h1>
+      <button class="btn-text right strong" data-act="saveTx">Sichern</button></header>
+    <form id="tForm" class="fin" autocomplete="off" onsubmit="return false">
+      <div class="tx-seg-w"><span class="tx-seg">
+        <button type="button" class="on" data-kind="in">Einzahlung</button>
+        <button type="button" data-kind="out">Entnahme</button></span></div>
+      <div class="tx-amt-row">
+        <button type="button" class="tx-sign" data-sign aria-label="Stufen addieren oder abziehen">+</button>
+        <input class="amt-input" name="amount" inputmode="decimal" placeholder="0 ${curSym()}" value="${g0?.plan?.amount ? amtStr(g0.plan.amount) : ''}">
+      </div>
+      <div class="amt-sub" id="tSub">wird deinem Ersparten gutgeschrieben</div>
+      <div class="quick">${[10, 25, 50, 100, 250].map(v => `<button type="button" data-q="${v}">+${v} ${curSym()}</button>`).join('')}</div>
+      <div class="fgroup">
+        <label class="field"><span>Ziel</span><select name="goal">${S.fin.goals.length ? `<option value="" ${g0 ? '' : 'selected'}>Auf alle Sparziele verteilen</option>` : ''}${opts}${S.fin.goals.length ? '' : '<option value="">Allgemein (ohne Ziel)</option>'}</select></label>
+        <label class="field"><span>Datum</span><input type="date" name="date" value="${localISO()}"></label>
+        <label class="field"><span>Notiz</span><input name="note" placeholder="optional"></label>
+      </div>
+    </form></div>`;
+  // Tippen auf den abgedunkelten Hintergrund schließt das Popup
+  m.addEventListener('click', e => { if (e.target === m) closeTxSheet(); });
+  document.body.appendChild(m); document.body.classList.add('tx-open');
+  const fc = $('#fcard'); if (fc) fc._tx = true;
+  const form = $('#tForm'); txKind = 'in'; let sgn = 1;
   form.addEventListener('click', e => {
-    const k = e.target.closest('[data-kind]'), q = e.target.closest('[data-q]');
-    if (k) { kind = k.dataset.kind; form.querySelectorAll('[data-kind]').forEach(x => x.classList.toggle('on', x === k));
-      $('#tSub').textContent = kind === 'in' ? 'wird deinem Ersparten gutgeschrieben' : 'wird von deinem Ersparten abgezogen'; }
-    if (q) form.amount.value = amtStr(parseAmount(form.amount.value) + +q.dataset.q);
+    const k = e.target.closest('[data-kind]'), q = e.target.closest('[data-q]'), sg = e.target.closest('[data-sign]');
+    // +/− Knopf: Stufen addieren oder abziehen
+    if (sg) { sgn = -sgn; sg.textContent = sgn > 0 ? '+' : '−'; sg.classList.toggle('minus', sgn < 0);
+      form.querySelectorAll('[data-q]').forEach(b => { b.textContent = `${sgn > 0 ? '+' : '−'}${b.dataset.q} ${curSym()}`; }); }
+    if (k) { txKind = k.dataset.kind; form.querySelectorAll('[data-kind]').forEach(x => x.classList.toggle('on', x === k));
+      $('#tSub').textContent = txKind === 'in' ? 'wird deinem Ersparten gutgeschrieben' : 'wird von deinem Ersparten abgezogen'; }
+    if (q) { form.amount.value = amtStr(Math.max(0, parseAmount(form.amount.value) + sgn * +q.dataset.q));
+      const a = form.amount; a.classList.remove('bump'); void a.offsetWidth; a.classList.add('bump'); }
   });
-  views.txEdit.kind = () => kind;
   if (k0 === 'out') form.querySelector('[data-kind=out]').click();
-  if (!form.amount.value) setTimeout(() => form.amount.focus(), 50);
-};
+  if (!form.amount.value) setTimeout(() => form.amount.focus(), 260);
+}
+function closeTxSheet(now) {
+  const m = document.querySelector('.tx-pop-bg'); if (!m) return;
+  document.body.classList.remove('tx-open');
+  const fc = $('#fcard'); if (fc) fc._tx = false;
+  if (now) { m.remove(); return; }
+  m.classList.add('closing'); setTimeout(() => m.remove(), 230);
+}
+views.txEdit = ({id, kind}) => { stack.pop(); render(true); openTxSheet(id, kind); }; // ältere Links/Neuladen
+views.txEdit.kind = () => txKind;
 
 // Überweisen: Daten zum Kopieren + Versuch, die Banking-App zu öffnen (BezahlCode)
 views.transfer = ({id}) => {
@@ -1742,7 +1890,7 @@ views.transfer = ({id}) => {
     <button type="button" class="cpb" data-act="copyField" data-f="${name}" aria-label="${label} kopieren">${lucide('copy')}</button></div>`;
   setView(`
   <header class="top"><button class="btn-text" data-act="back">${ICON.back}Zurück</button><h1>Überweisen</h1><div style="min-width:84px"></div></header>
-  <div class="wrap fin"><div class="fin-aura"></div><form id="trForm" autocomplete="off" onsubmit="return false">
+  <div class="wrap fin"><div class="fin-aura"></div><div class="fin-grain"></div><form id="trForm" autocomplete="off" onsubmit="return false">
     <div class="info" style="margin-top:8px">${lucide('shield-check')}<div><b>Die Überweisung machst du in deiner Banking-App.</b> Banken lassen fremde Apps aus Sicherheitsgründen keine Überweisungen auslösen. Hier hast du alle Daten zum schnellen Kopieren.</div></div>
     <div class="fgroup">
       ${row('Empfänger', 'name', bk.name || '', 'Kontoinhaber')}
@@ -1823,7 +1971,8 @@ const actions = {
   navBackup() { if (cur().view !== 'backup') go('backup'); },
   navFinance() { if (cur().view !== 'finance') go('finance'); },
   openGoal(t) { go('goal', {id: t.dataset.id}); },
-  newTx(t) { go('txEdit', {id: t.dataset.id || '', kind: t.dataset.kind || 'in'}); },
+  newTx(t) { openTxSheet(t.dataset.id || '', t.dataset.kind || 'in'); },
+  closeTx() { closeTxSheet(); },
   // Verlauf: nur den Diagramm-Bereich neu zeichnen (die restliche Seite bleibt stehen)
   vlRange(t) { lsSet('fin.vlRange', t.dataset.v); const v = $('#vl'); if (v) { v.outerHTML = verlaufHtml(); vlScrub(); } },
   vlMode(t) { lsSet('fin.vlMode', t.dataset.v); const v = $('#vl'); if (v) { v.outerHTML = verlaufHtml(); vlScrub(); } },
@@ -1855,12 +2004,12 @@ const actions = {
     const extra = {date: form.date.value || localISO(), note: form.note.value.trim()};
     if (!form.goal.value && amount > 0 && S.fin.goals.length) { // ohne Ziel → auf alle Sparziele verteilen
       const {r, n} = await addSplitTx(amount, {...extra, note: extra.note || 'Auf alle Ziele verteilt'});
-      back(); reward(r);
+      closeTxSheet(); cur().scroll = scrollY; render(true); $('#fcard')?._celebrate?.(); reward(r);
       if (n > 1) setTimeout(() => toast(`${eur(amount)} auf ${n} Sparziele verteilt`), 2500);
       return;
     }
     const r = await addTx(form.goal.value || null, amount, extra);
-    back(); reward(r);
+    closeTxSheet(); cur().scroll = scrollY; render(true); if (amount > 0) $('#fcard')?._celebrate?.(); reward(r);
     if (amount < 0) toast(`${eur(-amount)} entnommen`);
   },
   txMenu(t) {
@@ -2089,7 +2238,7 @@ async function offerAblageImport(auto) {
 
 views.settings = () => {
   const last = S.meta?.lastBackup;
-  setView(`<div class="fin-aura"></div>
+  setView(`<div class="fin-aura"></div><div class="fin-grain"></div>
   <header class="top fin-top"><button class="btn-text" data-act="back">${ICON.back}Zurück</button><h1>Einstellungen</h1><div style="min-width:84px"></div></header>
   <div class="wrap fin">
     <div class="section-h" style="margin-top:12px"><span>Profil</span></div>
@@ -2118,7 +2267,19 @@ views.settings = () => {
   ${bottomNav('settings')}`);
 };
 
+// Burger-Menü oben rechts: kleines Glas-Menü mit Einstellungen, Profil und Backup
+function openMenu(btn) {
+  document.querySelectorAll('.fin-menu-bg').forEach(x => x.remove());
+  const r = btn.getBoundingClientRect(), m = document.createElement('div'); m.className = 'fin-menu-bg';
+  const items = [['navSettings', 'settings', 'Einstellungen'], ['openProfile', 'user', 'Profil'], ['exportBackup', 'cloud-upload', 'Backup erstellen']];
+  m.innerHTML = `<div class="fin-menu" style="top:${Math.round(r.bottom + 6)}px;right:${Math.round(innerWidth - r.right)}px">
+    ${items.map(([a, i, l]) => `<button data-m="${a}">${lucide(i)}<span>${l}</span></button>`).join('')}</div>`;
+  const card = $('#fcard'); if (card) card._menu = true; // Karte im Hintergrund neigt sich weg
+  m.addEventListener('click', e => { const b = e.target.closest('[data-m]'); m.remove(); if (card) card._menu = false; if (b) actions[b.dataset.m]?.(b); });
+  document.body.appendChild(m);
+}
 Object.assign(actions, {
+  openMenu(t) { openMenu(t); },
   navHome() { if (cur().view !== 'home' || stack.length > 1) resetTo({view: 'home', params: {}}); },
   navFinance() { actions.navHome(); },
   navSettings() { if (cur().view !== 'settings') go('settings'); },
@@ -2206,6 +2367,8 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 
 /* ---------- Start ---------- */
 (async () => {
+  // Als Datei/Schnappschuss geoeffnet (file:, data:, blob:): dort sperrt der Browser den App-Speicher -> zur Live-Vorschau am PC umleiten
+  if (!/^https?:$/.test(location.protocol)) { try { location.replace('http://localhost:8766/'); } catch {} app.innerHTML = '<div class="empty">Vorschau: <a href="http://localhost:8766/" style="color:#ffb98a">localhost:8766</a> öffnen</div>'; return; }
   try { await loadAll(); }
   catch (e) { app.innerHTML = `<div class="empty">${emptyIcon('triangle-alert')}Speicher nicht verfügbar.<br>${esc(e.message)}</div>`; return; }
   const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
