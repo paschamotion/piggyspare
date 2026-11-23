@@ -775,6 +775,13 @@ body.tx-open .fc-wrap{z-index:73}
 @keyframes txDown{to{transform:translateY(100%)}}
 @keyframes fadeOut{to{opacity:0}}
 body.tx-open{overflow:hidden}
+body.scroll-lock{position:fixed;left:0;right:0;overflow:hidden}
+.tx-pop-bg{overscroll-behavior:contain;touch-action:none}
+.tx-pop{touch-action:pan-y}
+/* Tastatur offen: nur Kopfzeile und Betrag */
+.tx-pop.kb .tx-seg-w,.tx-pop.kb .amt-sub,.tx-pop.kb .quick,.tx-pop.kb .fgroup,.tx-pop.kb .tx-sign,.tx-pop.kb .tx-grip{display:none}
+.tx-pop.kb{padding-bottom:10px}
+.tx-pop.kb .amt-input{padding-bottom:4px}
 /* Währungsauswahl im Profil */
 .pf-cur-l{margin:22px 0 8px;text-align:center;color:var(--muted);font-size:13px;letter-spacing:.4px}
 .pf-cur{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
@@ -831,7 +838,7 @@ body::before{background:
 <script>
 'use strict';
 // Bei jeder neuen Version erhöhen – daran erkennt die App, dass es ein Update gibt.
-const APP_VERSION = '2026.11.23-41';
+const APP_VERSION = '2026.11.23-42';
 /* ---------- Helfer ---------- */
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1844,7 +1851,7 @@ function openTxSheet(id, k0) {
         <button type="button" data-kind="out">Entnahme</button></span></div>
       <div class="tx-amt-row">
         <button type="button" class="tx-sign" data-sign aria-label="Stufen addieren oder abziehen">+</button>
-        <input class="amt-input" name="amount" inputmode="decimal" placeholder="0 ${curSym()}" value="${g0?.plan?.amount ? amtStr(g0.plan.amount) : ''}">
+        <input class="amt-input" name="amount" inputmode="decimal" enterkeyhint="done" placeholder="0 ${curSym()}" value="${g0?.plan?.amount ? amtStr(g0.plan.amount) : ''}">
       </div>
       <div class="amt-sub" id="tSub">wird deinem Ersparten gutgeschrieben</div>
       <div class="quick">${[10, 25, 50, 100, 250].map(v => `<button type="button" data-q="${v}">+${v} ${curSym()}</button>`).join('')}</div>
@@ -1856,7 +1863,11 @@ function openTxSheet(id, k0) {
     </form></div>`;
   // Tippen auf den abgedunkelten Hintergrund schließt das Popup
   m.addEventListener('click', e => { if (e.target === m) closeTxSheet(); });
+  // Hintergrund nicht scrollbar: Seite einfrieren (iOS ignoriert overflow:hidden), Wischen außerhalb des Popups blockieren
+  lockScroll(true);
+  m.addEventListener('touchmove', e => { if (!e.target.closest('.tx-pop') || e.target.closest('.tx-pop') && !e.target.closest('select,textarea')) e.preventDefault(); }, {passive: false});
   document.body.appendChild(m); document.body.classList.add('tx-open');
+  fitToViewport();
   const fc = $('#fcard'); if (fc) fc._tx = true;
   const form = $('#tForm'); txKind = 'in'; let sgn = 1;
   form.addEventListener('click', e => {
@@ -1870,11 +1881,30 @@ function openTxSheet(id, k0) {
       const a = form.amount; a.classList.remove('bump'); void a.offsetWidth; a.classList.add('bump'); }
   });
   if (k0 === 'out') form.querySelector('[data-kind=out]').click();
+  // Tastatur offen beim Betrag: Popup schrumpft, sodass nur noch die Zahl (und Sichern) zu sehen ist
+  const pop = m.querySelector('.tx-pop');
+  form.amount.addEventListener('focus', () => pop.classList.add('kb'));
+  form.amount.addEventListener('blur', () => setTimeout(() => { if (document.activeElement !== form.amount) pop.classList.remove('kb'); }, 60));
+  form.amount.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); form.amount.blur(); } });
   if (!form.amount.value) setTimeout(() => form.amount.focus(), 260);
 }
+// Seite festhalten, solange das Popup offen ist (auch wenn die Tastatur aufgeht)
+let lockY = 0;
+function lockScroll(on) {
+  const b = document.body;
+  if (on) { if (b.classList.contains('scroll-lock')) return; lockY = scrollY; b.style.top = '0px'; b.classList.add('scroll-lock'); /* Seite steht oben: Karte bleibt sichtbar */ }
+  else if (b.classList.contains('scroll-lock')) { b.classList.remove('scroll-lock'); b.style.top = ''; scrollTo(0, lockY); }
+}
+// Popup immer im sichtbaren Bereich über der Tastatur halten (iOS verkleinert nur den sichtbaren Ausschnitt)
+function fitToViewport() {
+  const m = document.querySelector('.tx-pop-bg'), vv = window.visualViewport; if (!m || !vv) return;
+  m.style.top = `${vv.offsetTop}px`; m.style.height = `${vv.height}px`; m.style.bottom = 'auto';
+}
+if (window.visualViewport) { visualViewport.addEventListener('resize', fitToViewport); visualViewport.addEventListener('scroll', fitToViewport); }
 function closeTxSheet(now) {
   const m = document.querySelector('.tx-pop-bg'); if (!m) return;
   document.body.classList.remove('tx-open');
+  document.activeElement?.blur?.(); lockScroll(false);
   const fc = $('#fcard'); if (fc) fc._tx = false;
   if (now) { m.remove(); return; }
   m.classList.add('closing'); setTimeout(() => m.remove(), 230);
