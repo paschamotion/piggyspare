@@ -1,0 +1,2213 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PiggySpare">
+<meta name="theme-color" content="#060304">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap">
+<link rel="apple-touch-icon" href="icon-180.png?v=2">
+<link rel="icon" href="icon-180.png?v=2">
+<link rel="manifest" href="manifest.webmanifest">
+<title>PiggySpare</title>
+<style>
+:root{
+  --bg:#08060c;--card:rgba(255,255,255,.06);--card-2:rgba(255,255,255,.12);--solid:#1b1521;
+  --text:#f6f3f8;--muted:rgba(246,243,248,.56);--line:rgba(255,255,255,.09);
+  --accent:#e6bfff;--grad:linear-gradient(135deg,#8b5cff 0%,#d9468f 100%);
+  --danger:#ff6b81;--warn:#ffc069;--ok:#4be39b;--chip:rgba(255,255,255,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg);color-scheme:dark}
+html,body{margin:0;color:var(--text);overflow-x:hidden}
+body{font:16px/1.4 "Outfit",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);min-height:100vh;
+  -webkit-user-select:none;user-select:none;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:
+  radial-gradient(70% 45% at 108% 6%,rgba(178,84,130,.55),transparent 70%),
+  radial-gradient(60% 40% at -12% 34%,rgba(96,60,176,.38),transparent 70%),
+  radial-gradient(80% 50% at 60% 112%,rgba(150,62,116,.38),transparent 70%),var(--bg)}
+input,textarea{-webkit-user-select:text;user-select:text}
+button{font:inherit;color:inherit;cursor:pointer}
+svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+svg.i.sm{width:15px;height:15px;vertical-align:-2px}
+svg.i.chev{width:18px;height:18px;color:var(--muted)}
+svg.i.logo{width:24px;height:24px;stroke-width:2}
+svg.i.empty-i{width:46px;height:46px;stroke-width:1.4;color:var(--muted)}
+.link{display:inline-flex;align-items:center;gap:2px}
+.title-ico{display:flex;align-items:center;gap:12px}
+.title-ico span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:6px;min-height:56px;padding:6px 12px;
+  background:rgba(8,6,12,.55);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.top h1{flex:1;margin:0;font-size:17px;font-weight:500;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn-text{background:none;border:0;color:var(--text);font-size:16px;padding:8px 4px;min-width:84px;text-align:left;display:flex;align-items:center;gap:2px}
+.btn-text.right{justify-content:flex-end;text-align:right}
+.btn-text.strong{font-weight:600;color:var(--accent)}
+.btn-text:disabled{opacity:.35}
+.big-title{font-size:32px;font-weight:500;letter-spacing:-.5px;margin:4px 16px 12px}
+.wrap{padding:0 16px 140px;max-width:720px;margin:0 auto}
+
+/* Kopf der Startseite */
+.hero{display:flex;align-items:center;gap:12px;padding:14px 16px 4px;max-width:720px;margin:0 auto}
+.avatar{width:50px;height:50px;border-radius:50%;background:#fff;color:#141018;display:grid;place-items:center;flex:none}
+.greet .g1{font-size:16px;font-weight:500}
+.greet .g2{font-size:14px;color:var(--muted)}
+.hero .sp{flex:1}
+.round{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;flex:none;position:relative;
+  background:var(--card);border:1px solid var(--line);color:var(--text);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.dot{position:absolute;top:11px;right:12px;width:8px;height:8px;border-radius:50%;background:#ff4d6d;box-shadow:0 0 0 2px #1a1220}
+
+.avatar{border:0;padding:0;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.greet{min-width:0}
+.greet .g1,.greet .g2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Willkommen + Profil */
+.onb{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;padding:28px 24px calc(28px + env(safe-area-inset-bottom));position:relative;overflow:hidden;max-width:560px;margin:0 auto}
+.onb.onb-edit{min-height:0;padding-top:12px}
+.orb{position:absolute;z-index:-1;pointer-events:none;width:150%;aspect-ratio:1;right:-88%;top:9%;border-radius:50%;
+  background:radial-gradient(circle at 62% 46%,#08060c 56%,rgba(236,150,196,.85) 63.5%,rgba(160,70,120,.35) 68%,transparent 74%);filter:blur(1.5px)}
+.orb::after{content:"";position:absolute;inset:-12%;border-radius:50%;background:radial-gradient(circle at 70% 50%,rgba(190,90,140,.35),transparent 62%);z-index:-1}
+.onb-logo{display:flex;align-items:center;gap:8px;font-size:23px;font-weight:500;margin-top:36px}
+.onb-logo svg{width:28px;height:28px;stroke-width:2.2}
+.onb-h{font-size:54px;line-height:1.06;font-weight:500;letter-spacing:-1.2px;margin:auto 0 18px}
+.onb-h .dim{color:rgba(246,243,248,.42)}
+.onb-p{color:var(--muted);font-size:16px;line-height:1.45;max-width:290px;margin:0 0 22px}
+.dots{display:flex;gap:6px;align-items:center}
+.dots i{width:8px;height:3px;border-radius:2px;background:rgba(255,255,255,.35)}
+.dots b{width:28px;height:3px;border-radius:2px;background:#fff}
+.onb .cta{margin-top:48px}
+.onb-step{color:var(--muted);font-size:14px;margin-top:8px}
+.onb-h2{font-size:40px;font-weight:500;letter-spacing:-.8px;margin:10px 0 10px;line-height:1.1}
+.pf-av{width:136px;height:136px;border-radius:50%;margin:26px auto 6px;position:relative;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);padding:0;flex:none}
+.pf-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.pf-av .pf-user{width:58px;height:58px;stroke-width:1.4}
+.pf-badge{position:absolute;right:2px;bottom:2px;width:42px;height:42px;border-radius:50%;background:var(--grad);display:grid;place-items:center;color:#fff;border:3px solid var(--bg)}
+.pf-badge svg{width:19px;height:19px}
+.pf-input{width:100%;height:58px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--text);font:inherit;font-size:18px;padding:0 22px;outline:none;text-align:center;margin-top:18px}
+.pf-input::placeholder{color:rgba(246,243,248,.35)}
+.pf-input:focus{border-color:rgba(255,255,255,.3)}
+.skip{background:none;border:0;color:var(--muted);margin-top:12px;font-size:15px;align-self:center;padding:6px 10px}
+
+/* Übersicht */
+.stat{position:relative;margin:22px 0 6px;min-height:150px;padding-right:140px}
+.stat-l{font-size:18px;font-weight:500}
+.stat-n{font-size:52px;font-weight:500;letter-spacing:-1.5px;line-height:1.05;margin:8px 0 10px}
+.stat-n span{color:var(--muted);font-size:22px;letter-spacing:0;margin-left:4px}
+.stat-s{font-size:14px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.stat-s svg{width:18px;height:18px}
+.mini{position:absolute;right:-16px;top:-8px;width:146px;height:164px;border-radius:22px 0 0 22px;padding:16px;
+  background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.03));border:1px solid var(--line);border-right:0;
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);text-align:left;color:var(--text);display:flex;flex-direction:column;
+  box-shadow:-12px 14px 40px rgba(0,0,0,.4)}
+.mini .k{font-weight:700;letter-spacing:1.5px;font-size:13px;font-style:italic}
+.mini .n{font-size:44px;font-weight:500;margin-top:auto;line-height:1}
+.mini .s{font-size:12px;color:var(--muted);margin-top:6px}
+.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 6px}
+.qa button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted);font-size:14px;padding:0}
+.qa .c{width:100%;max-width:86px;height:56px;border-radius:999px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;color:var(--text)}
+.qa button.on{color:var(--text);font-weight:500}
+.qa button.on .c{background:#fff;color:#141018;border-color:#fff}
+.qa button:active .c{transform:scale(.95)}
+
+/* Karten-Kacheln (Dokumente im Kartenformat) */
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}
+@media (min-width:560px){.cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.card-tile{display:flex;flex-direction:column;gap:2px;background:none;border:0;padding:0;text-align:left;min-width:0}
+.card-tile:active{transform:scale(.97)}
+.card-img{display:block;width:100%;aspect-ratio:1.586;border-radius:14px;overflow:hidden;background:var(--card);border:1px solid var(--line);
+  box-shadow:0 8px 22px rgba(0,0,0,.4);margin-bottom:6px;position:relative}
+.card-img img{width:100%;height:100%;object-fit:cover;display:block}
+.card-img::after{content:"";position:absolute;inset:0;border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.14),transparent 45%);pointer-events:none}
+.card-ph{width:100%;height:100%;display:grid;place-items:center;color:var(--muted)}
+.card-ph svg{width:30px;height:30px;stroke-width:1.5}
+.card-t{font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2px}
+.card-s{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2px}
+/* Backup-Seite */
+.bk-hero{display:flex;gap:14px;align-items:center;padding:18px;border-radius:24px;border:1px solid var(--line);background:var(--card)}
+.bk-hero b{display:block;font-size:18px;font-weight:500}
+.bk-hero small{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.bk-big{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;flex:none;background:rgba(75,227,155,.15);color:var(--ok)}
+.bk-big svg{width:27px;height:27px}
+.bk-hero.bk-pending .bk-big{background:rgba(139,92,255,.22);color:#c9b3ff}
+.bk-hero.bk-never{border-color:rgba(255,192,105,.4);background:linear-gradient(135deg,rgba(255,192,105,.12),rgba(255,255,255,.04))}
+.bk-hero.bk-never .bk-big{background:rgba(255,192,105,.18);color:#ffc069;animation:bkShimmer 2.2s ease-in-out infinite}
+.bk-hero.bk-old{border-color:rgba(255,107,129,.45);background:linear-gradient(135deg,rgba(255,107,129,.14),rgba(255,255,255,.04))}
+.bk-hero.bk-old .bk-big{background:rgba(255,107,129,.18);color:#ff6b81}
+.bk-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.bk-stat{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px 8px;text-align:center}
+.bk-stat .n{display:block;font-size:30px;font-weight:500;line-height:1.1}
+.bk-stat .l{color:var(--muted);font-size:13px}
+.bk-stat.warn .n{color:var(--warn)}
+.bk-bar{height:8px;border-radius:99px;background:var(--chip);margin-top:16px;overflow:hidden}
+.bk-bar i{display:block;height:100%;background:var(--grad);border-radius:99px;transition:width .4s}
+.meta .mrow .v b{font-weight:500;color:var(--text)}
+/* Backup-Knopf in der Leiste: gelb schimmernd = noch nie gesichert, rot = älter als 1 Monat */
+.nav button.bk-never{color:#ffc069;border-color:rgba(255,192,105,.55);background:rgba(48,36,14,.82);animation:bkShimmer 2.2s ease-in-out infinite}
+.nav button.bk-old{color:#ff6b81;border-color:rgba(255,107,129,.6);background:rgba(58,16,26,.85);box-shadow:0 0 14px rgba(255,77,109,.45),0 4px 14px rgba(0,0,0,.35)}
+@keyframes bkShimmer{0%,100%{box-shadow:0 0 0 0 rgba(255,192,105,0),0 4px 14px rgba(0,0,0,.35)}50%{box-shadow:0 0 18px 4px rgba(255,192,105,.55),0 4px 14px rgba(0,0,0,.35)}}
+@media (prefers-reduced-motion:reduce){.nav button.bk-never{animation:none;box-shadow:0 0 14px rgba(255,192,105,.5)}}
+.search{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:0 16px;height:48px;color:var(--muted);margin-top:18px}
+.search svg{width:19px;height:19px}
+.search input{flex:1;border:0;background:none;font:inherit;font-size:16px;color:var(--text);outline:none;min-width:0}
+.search input::placeholder{color:var(--muted)}
+
+.section-h{display:flex;justify-content:space-between;align-items:baseline;font-size:20px;font-weight:500;color:var(--text);margin:28px 2px 12px}
+.link{background:none;border:0;color:var(--muted);font-size:14px;padding:0}
+
+.sh-r{display:flex;align-items:center;gap:10px}
+.add-btn{display:inline-flex;align-items:center;gap:4px;height:34px;padding:0 13px 0 9px;border-radius:999px;border:1px solid rgba(230,191,255,.35);
+  background:linear-gradient(135deg,rgba(139,92,255,.32),rgba(217,70,143,.28));color:#fff;font-size:14px;font-weight:500;white-space:nowrap}
+.add-btn svg{width:17px;height:17px;stroke-width:2.2}
+.add-btn:active{transform:scale(.96)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.chips button{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px 0 11px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:14px}
+.chips button svg{width:16px;height:16px}
+.chips button.on{background:#fff;color:#141018;border-color:#fff}
+.seg{display:inline-flex;padding:3px;gap:2px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
+.seg button{width:34px;height:28px;border:0;border-radius:999px;background:none;color:var(--muted);display:grid;place-items:center;padding:0}
+.seg button svg{width:16px;height:16px}
+.seg button.on{background:#fff;color:#141018}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:560px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.folder{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:14px;text-align:left;min-height:110px;display:flex;flex-direction:column;
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.folder:active,.row:active{opacity:.6}
+.ico{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:21px}
+.folder .name{font-weight:500;margin-top:auto;padding-top:10px;line-height:1.2;overflow:hidden;text-overflow:ellipsis}
+.folder .count{color:var(--muted);font-size:13px}
+
+.list{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.row{display:flex;align-items:center;gap:12px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px 14px;text-align:left;
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.rc{flex:1;min-width:0}
+.rc .t{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc .s{color:var(--muted);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chev{color:var(--muted);font-size:22px;line-height:1}
+.thumb{width:44px;height:56px;border-radius:12px;object-fit:cover;object-position:top;background:rgba(255,255,255,.9);flex:none;display:grid;place-items:center;font-size:11px;font-weight:700;color:#d9468f}
+.badge{font-size:12px;font-weight:500;padding:4px 9px;border-radius:999px;background:var(--chip);color:var(--muted);white-space:nowrap}
+.badge.late{background:rgba(255,107,129,.16);color:var(--danger)}
+.badge.soon{background:rgba(255,192,105,.16);color:var(--warn)}
+.badge.ok{background:rgba(75,227,155,.14);color:var(--ok)}
+
+.empty{text-align:center;color:var(--muted);padding:40px 20px}
+.empty .big{font-size:44px;margin-bottom:8px}
+
+/* Leiste unten */
+.nav-fade{position:fixed;left:0;right:0;bottom:0;height:calc(150px + env(safe-area-inset-bottom));z-index:5;pointer-events:none;
+  background:linear-gradient(to top,rgba(8,6,12,.92) 0%,rgba(8,6,12,.6) 45%,rgba(8,6,12,0) 100%);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  -webkit-mask-image:linear-gradient(to top,#000 0%,#000 40%,transparent 100%);mask-image:linear-gradient(to top,#000 0%,#000 40%,transparent 100%)}
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));z-index:6;display:flex;gap:14px;align-items:center}
+.nav button{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(26,19,32,.78);color:rgba(246,243,248,.75);display:grid;place-items:center;position:relative;
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.nav button svg{width:19px;height:19px}
+.nav button.on{background:rgba(255,255,255,.9);color:#141018;border-color:transparent}
+.nav button .dot{top:8px;right:9px}
+.nav .scan{width:64px;height:64px;border:0;color:#fff;background:var(--grad);box-shadow:0 10px 28px rgba(201,70,160,.5);margin:0 4px}
+.nav .scan svg{width:27px;height:27px}
+.nav button:active{transform:scale(.94)}
+
+.banner{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:14px;font-size:14px;color:var(--muted)}
+.banner b{display:block;font-size:15px;font-weight:500;color:var(--text)}
+.banner .x{margin-left:auto;background:none;border:0;color:var(--muted);font-size:22px;line-height:1;padding:0 2px}
+
+/* Update-Karte */
+.upd{margin-top:16px;padding:16px;border-radius:26px;background:linear-gradient(135deg,rgba(139,92,255,.3),rgba(217,70,143,.24));border:1px solid rgba(255,255,255,.14);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.upd .h{display:flex;gap:12px;align-items:center}
+.upd .gi{width:44px;height:44px;border-radius:50%;background:var(--grad);display:grid;place-items:center;flex:none;color:#fff}
+.upd b{display:block;font-weight:500;font-size:17px}
+.upd small{color:var(--muted);font-size:14px}
+.cta{display:flex;gap:10px;margin-top:14px}
+.cta .go{flex:1;height:54px;border-radius:999px;border:0;background:#fff;color:#141018;font-size:17px;font-weight:500}
+.cta .arrow{width:54px;height:54px;border-radius:50%;border:0;background:#fff;color:#141018;display:grid;place-items:center;flex:none}
+.cta button:active{transform:scale(.97)}
+
+/* Formular */
+.fgroup{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;margin-top:16px}
+.field{display:flex;align-items:center;gap:12px;padding:0 16px;min-height:52px;border-bottom:1px solid var(--line)}
+.field:last-child{border-bottom:0}
+.field>span{width:96px;flex:none;color:var(--muted)}
+.field input,.field select,.field textarea{flex:1;min-width:0;border:0;background:none;font:inherit;font-size:16px;color:var(--text);outline:none;padding:13px 0;text-align:right;-webkit-appearance:none;appearance:none}
+.field input::placeholder,.field textarea::placeholder{color:rgba(246,243,248,.3)}
+.field input[type=date]{min-height:24px}
+.field.col{flex-direction:column;align-items:stretch;gap:0;padding-top:10px}
+.field.col>span{width:auto;font-size:13px}
+.field textarea{text-align:left;resize:none;padding-top:6px}
+.field select{direction:rtl}
+.field select option{direction:ltr;color:#000}
+.hint{color:var(--muted);font-size:13px;margin:8px 6px 0}
+
+.emojis{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;padding:12px}
+.emojis button{aspect-ratio:1;border:0;border-radius:50%;background:var(--chip);color:var(--text);display:grid;place-items:center;padding:0}
+.emojis button svg{width:20px;height:20px}
+.emojis button.on{outline:2px solid #fff}
+.colors{display:flex;gap:10px;padding:14px 16px;flex-wrap:wrap}
+.colors button{width:32px;height:32px;border-radius:50%;border:0}
+.colors button.on{box-shadow:0 0 0 3px var(--bg),0 0 0 5px #fff}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:1px solid var(--line);border-radius:999px;padding:15px;font-size:16px;font-weight:500;background:var(--card);color:var(--text)}
+.btn.primary{background:#fff;color:#141018;border-color:#fff}
+.btn.danger{color:var(--danger)}
+.btn:active{transform:scale(.98)}
+.btns{display:grid;gap:10px;margin-top:16px}
+.btns.two{grid-template-columns:1fr 1fr}
+
+/* Dokument */
+.meta{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.meta .mrow{display:flex;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line)}
+.meta .mrow:last-child{border-bottom:0}
+.meta .k{color:var(--muted)}
+.meta .v{text-align:right;min-width:0;overflow-wrap:anywhere}
+.note{white-space:pre-wrap;text-align:left!important}
+.pages{display:grid;gap:14px;margin-top:18px}
+.pagewrap{position:relative}
+.page{width:100%;display:block;border-radius:14px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.pnum{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:3px 9px;border-radius:999px}
+.pdel{position:absolute;right:8px;top:8px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;display:grid;place-items:center}
+.pdel svg{width:18px;height:18px}
+.toggle{display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;color:var(--accent)}
+
+/* Scan-Sitzung */
+.sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:8px}
+.sitem{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:8px}
+.sitem img{width:100%;aspect-ratio:3/4;object-fit:contain;background:rgba(255,255,255,.05);border-radius:12px;display:block}
+.sitem .ctl{display:flex;justify-content:space-between;align-items:center;margin-top:6px;color:var(--muted);font-size:14px}
+.sitem .ctl button{background:none;border:0;color:var(--text);padding:4px 6px}
+.sitem .ctl button.del{color:var(--danger)}
+.sitem .ctl svg{width:20px;height:20px}
+
+/* Editor */
+.editor{position:fixed;inset:0;z-index:50;background:#08060c;color:#fff;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.editor .top{position:static;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}
+.ed-stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
+.ed-box{position:relative;touch-action:none}
+.ed-box canvas{display:block;width:100%;height:100%}
+.ed-box svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.handle{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;touch-action:none}
+.handle::after{content:"";position:absolute;inset:13px;border-radius:50%;background:rgba(217,70,143,.45);border:2.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+.prev{max-width:calc(100% - 32px);max-height:calc(100% - 32px);background:#fff;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+.ed-bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:10px 12px 16px}
+.ed-bar button{background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff;border-radius:999px;padding:10px 15px;font-size:15px;display:flex;align-items:center;gap:6px}
+.ed-bar button svg{width:18px;height:18px}
+.ed-bar button.on{background:#fff;color:#141018}
+.ed-help{text-align:center;color:var(--muted);font-size:13px;padding:0 20px}
+.loupe{position:fixed;z-index:60;width:120px;height:120px;border-radius:50%;border:3px solid #fff;box-shadow:0 6px 24px rgba(0,0,0,.6);pointer-events:none;display:none;background:#000}
+.busy{position:absolute;inset:0;display:grid;place-items:center;background:rgba(8,6,12,.6);font-size:15px;z-index:3}
+.spin{width:28px;height:28px;border:3px solid rgba(255,255,255,.25);border-top-color:#e08fd0;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 10px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Sheet + Toast */
+.sheet-bg{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.5);display:flex;flex-direction:column;justify-content:flex-end;padding:10px 10px calc(10px + env(safe-area-inset-bottom));animation:fade .15s}
+.sheet{background:var(--solid);border:1px solid var(--line);border-radius:22px;overflow:hidden;margin-bottom:8px}
+.sheet-t{color:var(--muted);font-size:13px;text-align:center;padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+.sheet button,.sheet-cancel{display:block;width:100%;border:0;background:none;padding:17px;font-size:17px;color:var(--text);border-bottom:1px solid var(--line)}
+.sheet button:last-child{border-bottom:0}
+.sheet button.danger{color:var(--danger)}
+.sheet-cancel{background:#fff;color:#141018;border-radius:999px;font-weight:500;border:0}
+@keyframes fade{from{opacity:0}}
+/* Finanzen */
+.mini.fin{background:linear-gradient(160deg,rgba(75,227,155,.22),rgba(139,92,255,.12) 60%,rgba(255,255,255,.03))}
+.mini .mi{width:30px;height:30px;margin-top:10px;color:#9ff0c8;stroke-width:1.6}
+.mini .n.sm{font-size:30px}
+.fin-hero{position:relative;margin-top:6px;padding:20px;border-radius:28px;overflow:hidden;border:1px solid rgba(255,255,255,.14);
+  background:radial-gradient(120% 90% at 100% 0%,rgba(217,70,143,.42),transparent 60%),radial-gradient(90% 80% at 0% 100%,rgba(75,227,155,.22),transparent 60%),linear-gradient(135deg,rgba(139,92,255,.35),rgba(255,255,255,.04))}
+.fin-hero .l{font-size:15px;color:var(--muted)}
+.fin-hero .big{font-size:48px;font-weight:500;letter-spacing:-1.5px;line-height:1.1;margin:6px 0 10px;font-variant-numeric:tabular-nums}
+.fin-hero .row2{display:flex;gap:8px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:999px;background:rgba(255,255,255,.12);font-size:13px;font-weight:500}
+.pill svg{width:15px;height:15px}
+.pill.fire{background:rgba(255,140,60,.2);color:#ffb37a}
+.pill.up{background:rgba(75,227,155,.16);color:var(--ok)}
+.fin-pig{position:absolute;right:-14px;top:-10px;width:120px;height:120px;color:rgba(255,255,255,.1);stroke-width:1.2}
+.rate{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(255,192,105,.14),rgba(255,255,255,.04));border:1px solid rgba(255,192,105,.35);border-radius:22px;padding:12px 12px 12px 14px}
+.rate .go-btn{height:40px;padding:0 16px;border-radius:999px;border:0;background:#fff;color:#141018;font-weight:500;font-size:15px;white-space:nowrap}
+.rate .go-btn:active{transform:scale(.95)}
+.rate .skipl{background:none;border:0;color:var(--muted);font-size:13px;padding:2px 0 0}
+.goal{display:flex;align-items:center;gap:14px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:14px;text-align:left;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.goal:active{opacity:.7}
+.goal .rw{position:relative;flex:none;display:grid;place-items:center}
+.goal .rw .pc{position:absolute;font-size:13px;font-weight:600}
+.goal .gbar{height:6px;border-radius:9px;background:var(--chip);margin-top:8px;overflow:hidden}
+.goal .gbar i{display:block;height:100%;border-radius:9px;animation:barIn 1s cubic-bezier(.2,.8,.2,1) both}
+.goal.won{border-color:rgba(255,192,105,.5);background:linear-gradient(135deg,rgba(255,192,105,.16),rgba(255,255,255,.04))}
+@keyframes barIn{from{width:0}}
+.ring .rg{animation:ringIn 1.2s cubic-bezier(.2,.8,.2,1) both}
+@keyframes ringIn{from{stroke-dashoffset:var(--c)}}
+.fin-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.chart-card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:14px 12px 6px}
+.chart-card .ch{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px 4px;color:var(--muted);font-size:13px}
+.chart-card .ch b{color:var(--text);font-size:17px;font-weight:500}
+svg.chart{display:block;width:100%;height:auto;overflow:visible}
+svg.chart text{fill:rgba(246,243,248,.5);font:11px "Outfit",sans-serif}
+svg.chart .ln{fill:none;stroke:url(#fl);stroke-width:3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.3s ease-out forwards}
+svg.chart .ar{animation:fade 1.2s ease-out both}
+svg.chart .bar{transform-box:fill-box;transform-origin:50% 100%;animation:grow .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes grow{from{transform:scaleY(0)}}
+.ftable{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;font-size:15px;font-variant-numeric:tabular-nums}
+.ftable th{color:var(--muted);font-weight:400;font-size:13px;text-align:left;padding:11px 14px;border-bottom:1px solid var(--line)}
+.ftable td{padding:11px 14px;border-bottom:1px solid var(--line)}
+.ftable tr:last-child td{border-bottom:0}
+.ftable .r{text-align:right}
+.ftable .pos{color:var(--ok)}
+.ftable .neg{color:var(--danger)}
+.ftable .dim{color:var(--muted)}
+.ftable tr[data-act]:active{background:rgba(255,255,255,.05)}
+.tbl-wrap{border-radius:20px;overflow:hidden}
+.badges{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.bdg{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:11.5px;color:var(--muted);line-height:1.2}
+.bdg .bi{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:var(--chip);border:1px solid var(--line);color:rgba(255,255,255,.25)}
+.bdg .bi svg{width:24px;height:24px}
+.bdg.on{color:var(--text)}
+.bdg.on .bi{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 6px 18px rgba(201,70,160,.45)}
+.gbig{display:grid;place-items:center;position:relative;margin:6px auto 4px;width:200px;height:200px}
+.gbig .in{position:absolute;text-align:center}
+.gbig .in b{display:block;font-size:34px;font-weight:500;letter-spacing:-.5px}
+.gbig .in small{color:var(--muted);font-size:14px}
+.amt-input{width:100%;border:0;background:none;color:var(--text);font:inherit;font-size:56px;font-weight:500;text-align:center;outline:none;letter-spacing:-1px;padding:10px 0 0}
+.amt-input::placeholder{color:rgba(246,243,248,.25)}
+.amt-sub{text-align:center;color:var(--muted);font-size:14px;margin-bottom:6px}
+.quick{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0 4px}
+.quick button{height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px}
+.cprow{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 16px;border-bottom:1px solid var(--line);min-height:56px}
+.cprow:last-child{border-bottom:0}
+.cprow .rc .s{font-size:12px}
+.cprow .rc .t{font-weight:400;overflow-wrap:anywhere;white-space:normal}
+.cprow input{width:100%;border:0;background:none;color:var(--text);font:inherit;font-size:16px;outline:none;padding:0}
+.cpb{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--chip);color:var(--text);display:grid;place-items:center;flex:none}
+.cpb svg{width:18px;height:18px}
+.cpb.ok{background:rgba(75,227,155,.2);color:var(--ok)}
+.info{display:flex;gap:12px;padding:14px;border-radius:20px;background:rgba(110,168,255,.1);border:1px solid rgba(110,168,255,.3);font-size:14px;color:var(--muted)}
+.info b{color:var(--text);font-weight:500}
+.info>svg{color:#6ea8ff;margin-top:1px}
+.btn.bank{background:linear-gradient(135deg,#ff3b3b,#c8102e);border-color:transparent;color:#fff;box-shadow:0 8px 22px rgba(230,30,50,.35)}
+.setup{margin-top:14px;padding:14px 16px;border-radius:20px;background:var(--card);border:1px solid var(--line);font-size:14px;color:var(--muted)}
+.setup summary{color:var(--text);font-weight:500;font-size:15px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.setup summary::-webkit-details-marker{display:none}
+.setup ol{margin:12px 0 8px;padding-left:20px;display:grid;gap:8px}
+.setup b{color:var(--text);font-weight:500}
+.setup p{margin:0 0 10px}
+.dl-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:4px}
+.dl-stats .bk-stat.late .n{color:var(--danger)}
+.dl-stats .bk-stat.soon .n{color:var(--warn)}
+/* Finanzen: Glas, Verläufe, Übergänge ins Transparente */
+.fin-aura{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:#060304;animation:auraIn 1s ease-out both}
+.fin-aura::before,.fin-aura::after{content:"";position:absolute;border-radius:50%;pointer-events:none}
+.fin-aura::before{width:120vmax;height:120vmax;left:-35vmax;top:-60vmax;background:radial-gradient(closest-side,rgba(255,90,30,.15),rgba(200,40,20,.06) 45%,transparent 70%);animation:emberA 16s ease-in-out infinite alternate}
+.fin-aura::after{width:110vmax;height:110vmax;right:-55vmax;bottom:-50vmax;background:radial-gradient(closest-side,rgba(230,50,30,.12),rgba(255,120,40,.04) 50%,transparent 72%);animation:emberB 20s ease-in-out infinite alternate}
+@keyframes emberA{to{transform:translate(18vmax,10vmax) scale(1.1);opacity:.75}}
+@keyframes emberB{to{transform:translate(-14vmax,-12vmax) scale(1.15);opacity:.8}}@keyframes auraIn{from{opacity:0}}
+.top.fin-top{background:linear-gradient(to bottom,rgba(8,6,12,.8),rgba(8,6,12,.35) 70%,rgba(8,6,12,0));-webkit-mask-image:none}
+.big-title.fin-t{background:linear-gradient(100deg,#fff 20%,#f6c4e4 55%,#b9a4ff 85%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.fin{--glass:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.015) 55%,rgba(255,255,255,.03));
+  --edge:linear-gradient(160deg,rgba(255,255,255,.3),rgba(255,255,255,.05) 35%,rgba(255,255,255,0) 60%,rgba(217,70,143,.35))}
+.fin .goal,.fin .chart-card,.fin .bk-stat,.fin .fgroup,.fin .btn:not(.primary):not(.bank):not(.danger),.fin .tbl-wrap,.fin .setup,.fin .rate,.fin .info{position:relative;border-color:transparent;background:var(--glass)}
+.fin .goal::before,.fin .chart-card::before,.fin .bk-stat::before,.fin .fgroup::before,.fin .btn:not(.primary):not(.bank):not(.danger)::before,.fin .tbl-wrap::before,.fin .setup::before,.fin .rate::before,.fin .info::before,.fin .fin-hero .edge{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:var(--edge,var(--edge0));pointer-events:none;z-index:1;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.fin .ftable{border:0;background:none}
+.fin .section-h span:first-child{background:linear-gradient(90deg,#fff,rgba(246,200,232,.8));-webkit-background-clip:text;background-clip:text;color:transparent}
+.fin .section-h{position:relative}
+.fin .section-h::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.18),rgba(217,70,143,.18) 40%,transparent 80%)}
+.fin.anim>*{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+.fin.anim>*:nth-child(2){animation-delay:.06s}.fin.anim>*:nth-child(3){animation-delay:.12s}.fin.anim>*:nth-child(4){animation-delay:.18s}
+.fin.anim>*:nth-child(5){animation-delay:.24s}.fin.anim>*:nth-child(6){animation-delay:.3s}.fin.anim>*:nth-child(7){animation-delay:.36s}
+.fin.anim>*:nth-child(n+8){animation-delay:.42s}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+.fin .goal,.fin .row{-webkit-backdrop-filter:none;backdrop-filter:none}
+/* Hero */
+.fin .fin-hero{border-color:transparent;isolation:isolate;--edge:linear-gradient(140deg,rgba(255,255,255,.6),rgba(255,255,255,.08) 40%,transparent 60%,rgba(255,160,220,.55));
+  background:linear-gradient(120deg,rgba(139,92,255,.5),rgba(217,70,143,.42) 45%,rgba(75,227,155,.22) 80%,rgba(139,92,255,.4));
+  background-size:220% 220%;animation:heroShift 12s ease-in-out infinite alternate;box-shadow:0 24px 60px -20px rgba(201,70,160,.55)}
+@keyframes heroShift{to{background-position:100% 50%}}
+.fin .fin-hero::before{content:"";position:absolute;z-index:-1;width:220px;height:220px;border-radius:50%;left:-60px;bottom:-110px;background:radial-gradient(circle,rgba(75,227,155,.4),transparent 65%);animation:float 9s ease-in-out infinite alternate}
+.fin .fin-hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.16) 48%,transparent 60%);transform:translateX(-120%);animation:shine 5.5s ease-in-out 1s infinite}
+@keyframes float{to{transform:translate(70px,-30px) scale(1.15)}}
+@keyframes shine{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.fin .fin-hero .big{background:linear-gradient(100deg,#fff 30%,#ffe3f3 60%,#c8ffe4);-webkit-background-clip:text;background-clip:text;color:transparent}
+.fin .fin-pig{color:rgba(255,255,255,.14);animation:float2 6s ease-in-out infinite alternate}
+@keyframes float2{to{transform:translateY(10px) rotate(-6deg)}}
+.fin .pill{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.12)}
+/* Sparziele, Raten */
+.fin .goal{background:linear-gradient(110deg,var(--gct,rgba(255,255,255,.08)),rgba(255,255,255,.025) 55%,rgba(255,255,255,.01));--edge:linear-gradient(120deg,var(--gc,#fff),rgba(255,255,255,.08) 35%,transparent 65%,rgba(255,255,255,.14))}
+.fin .goal.won{background:linear-gradient(110deg,rgba(255,192,105,.26),rgba(255,255,255,.02) 60%,transparent);--edge:linear-gradient(120deg,#ffc069,transparent 60%,rgba(255,192,105,.4))}
+
+.fin .rate{background:linear-gradient(110deg,rgba(255,192,105,.2),rgba(255,140,90,.05) 55%,rgba(255,255,255,.01));--edge:linear-gradient(120deg,rgba(255,192,105,.75),rgba(255,192,105,.08) 50%,transparent)}
+.fin .rate .go-btn{background:linear-gradient(135deg,#fff,#ffe6c4);box-shadow:0 6px 18px rgba(255,192,105,.35)}
+/* Diagramme + Tabelle */
+.fin .chart-card{background:linear-gradient(180deg,rgba(139,92,255,.16),rgba(217,70,143,.05) 45%,rgba(255,255,255,.01))}
+.fin svg.chart .ln{filter:drop-shadow(0 6px 10px rgba(217,70,143,.55))}
+.fin .ftable{border-collapse:separate;border-spacing:0}
+.fin .ftable th{background:none;border-bottom:0}
+.fin .ftable thead tr{background:linear-gradient(90deg,rgba(139,92,255,.24),rgba(217,70,143,.08) 60%,transparent)}
+.fin .ftable td{border-bottom:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08) 30%,rgba(255,255,255,.08) 70%,transparent) bottom/100% 1px no-repeat}
+.fin .ftable tr:last-child td{background:none}
+.fin .ftable .pos{background-image:none;text-shadow:0 0 12px rgba(75,227,155,.45)}
+.fin .tbl-wrap{border-radius:20px}
+/* Erfolge */
+.fin .bdg .bi{background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.01))}
+.fin .bdg.on .bi{position:relative;background:conic-gradient(from 200deg,#8b5cff,#d9468f,#ffc069,#4be39b,#8b5cff);box-shadow:0 8px 24px rgba(201,70,160,.5)}
+.fin .bdg.on .bi::before{content:"";position:absolute;inset:3px;border-radius:50%;background:linear-gradient(160deg,#9b5cff,#d9468f)}
+.fin .bdg.on .bi svg{position:relative}
+/* Ziel-Detail */
+.fin .gbig::before{content:"";position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,var(--gct,rgba(217,70,143,.3)),transparent 65%);animation:breathe 4s ease-in-out infinite alternate}
+.fin .gbig .in b{background:linear-gradient(100deg,#fff,var(--gc,#fff));-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes breathe{to{transform:scale(1.08);opacity:.75}}
+.fin .info{background:linear-gradient(110deg,rgba(110,168,255,.16),rgba(110,168,255,.03) 60%,transparent);--edge:linear-gradient(120deg,rgba(110,168,255,.6),transparent 60%)}
+.fin .btn.primary{background:linear-gradient(135deg,#fff,#f6e9ff);box-shadow:0 10px 26px -8px rgba(230,191,255,.6)}
+@media (prefers-reduced-motion:reduce){.fin.anim>*,.fin-aura,.fin-aura::before,.fin-aura::after,.fin .fin-hero,.fin .fin-hero::before,.fin .fin-hero::after,.fin .fin-pig,.fin .gbig::before{animation:none!important}}
+/* Finanzkarte oben (Kreditkarten-Look) */
+.fin-head{padding-top:10px}
+.fin-head .avatar{margin-left:2px}
+/* Sparziel-Kacheln: Milchglas mit Lichtschein, hochkant, zwei nebeneinander */
+.gtiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (min-width:560px){.gtiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.gtile{position:relative;overflow:hidden;isolation:isolate;aspect-ratio:.8;border-radius:26px;padding:14px;display:flex;flex-direction:column;cursor:pointer;text-align:left;
+  background:linear-gradient(160deg,rgba(255,255,255,.075),rgba(255,255,255,.025) 50%,rgba(255,255,255,.04));
+  -webkit-backdrop-filter:blur(22px) saturate(1.2);backdrop-filter:blur(22px) saturate(1.2);
+  box-shadow:inset 0 0 22px 2px rgba(255,255,255,.045),0 0 16px rgba(255,255,255,.025),0 18px 40px -22px rgba(0,0,0,.8)}
+.gtile:active{transform:scale(.98)}
+.gt-glow{position:absolute;z-index:-1;width:140%;aspect-ratio:1;right:-70%;top:-62%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(255,255,255,.9),rgba(255,255,255,.35) 14%,color-mix(in srgb,var(--gc) 55%,transparent) 30%,color-mix(in srgb,var(--gc) 18%,transparent) 52%,transparent 72%);opacity:.75;filter:blur(6px)}
+.gt-glow{display:none}
+.gt-ring{position:absolute;z-index:-1;right:-46px;top:-46px;width:150px;height:150px;pointer-events:none;opacity:.95}
+.gt-ring svg{position:relative;filter:drop-shadow(0 0 6px var(--gc)) drop-shadow(0 0 16px var(--gc))}
+/* Lichtkugel mitten im Ring, heller Kern, Farbe des Ziels, weich auslaufend */
+.gt-ring::before{content:"";position:absolute;left:50%;top:50%;width:230px;height:230px;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(closest-side,#fff,rgba(255,250,235,.75) 12%,color-mix(in srgb,var(--gc) 75%,white 10%) 26%,color-mix(in srgb,var(--gc) 30%,transparent) 50%,transparent 74%);
+  mix-blend-mode:screen;opacity:.9;filter:blur(4px)}
+.gt-ring svg circle:first-child{stroke:rgba(255,255,255,.12)}
+.gt-ico{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;flex:none;
+  background:none;margin:-8px 0 0 -8px}
+.gt-ico svg{width:21px;height:21px;stroke-width:1.5}
+.gt-body{margin-top:auto;padding-right:30px;min-width:0}
+.gt-meta{display:flex;align-items:center;gap:5px;font-size:12px;color:rgba(246,243,248,.6)}
+.gt-meta svg{width:13px;height:13px}
+.gt-t{font-size:19px;line-height:1.15;font-weight:500;letter-spacing:-.2px;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gt-s{font-size:13px;margin-top:6px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gt-s span{color:rgba(246,243,248,.55);font-weight:400}
+.gt-sub{font-size:11px;color:rgba(246,243,248,.45);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gt-go{position:absolute;right:12px;bottom:12px;width:40px;height:40px;border-radius:50%;border:0;display:grid;place-items:center;color:#fff;
+  background:none;box-shadow:none}
+.gt-go svg{width:22px;height:22px;stroke-width:1.6}
+.gt-go:active{transform:scale(.92)}
+.gtile.won{background:linear-gradient(160deg,rgba(255,215,140,.22),rgba(255,255,255,.05) 45%,rgba(255,192,105,.1))}
+.fin-head{position:relative;display:flex;justify-content:space-between;align-items:center;min-height:56px}
+.fin-brand{display:flex;align-items:center;gap:4px;height:32px;line-height:1;color:#fff;font-size:12px;font-weight:300;letter-spacing:.5px;min-width:0;max-width:26%}
+.fin-brand svg{width:16px;height:16px;stroke-width:1.2;color:#fff;flex:none}
+/* „Welcome, Name“ immer genau in der Bildschirmmitte */
+.fin-head .fin-welcome{position:absolute;left:50%;top:calc(50% + 3px);transform:translate(-50%,-50%);max-width:52%}
+.fin-brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fin-welcome{display:flex;align-items:center;gap:7px;justify-content:center;background:none;border:0;padding:4px 0;min-width:0;
+  font-size:14px;font-weight:300;color:rgba(246,243,248,.62);white-space:nowrap;overflow:hidden}
+.fin-welcome b{font-weight:400;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis}
+.fin-av{width:24px;height:24px;border-radius:50%;overflow:hidden;flex:none;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18)}
+.fin-av img{width:100%;height:100%;object-fit:cover;display:block}
+.fin-av svg{width:14px;height:14px;stroke-width:1.5;color:var(--muted)}
+.fin-gear{justify-self:end;background:none;border:0;padding:8px;margin-right:-6px;color:rgba(246,243,248,.85);display:grid;place-items:center}
+.fin-gear svg{width:22px;height:22px;stroke-width:1.5}
+.fin-gear:active{opacity:.6}
+.round .nb{position:absolute;top:-3px;right:-3px;min-width:19px;height:19px;padding:0 5px;border-radius:99px;background:#ff3b4e;color:#fff;font-size:11px;font-weight:600;display:grid;place-items:center;box-shadow:0 0 0 2px var(--bg)}
+/* Karte: festes Kartenformat (ISO 85,6 x 54 mm), Inhalt skaliert mit der Kartenbreite */
+.fc-wrap{position:relative;perspective:1000px;margin:12px auto 0;max-width:420px;touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none}
+/* „+Betrag“ über der Karte: steigt auf und blendet aus (liegt außerhalb der Karte, damit es über den Rand hinaus steigen kann) */
+.fc-plus{position:absolute;z-index:3;left:40%;top:5%;pointer-events:none;white-space:nowrap;font-weight:600;font-size:clamp(20px,6.4vw,28px);letter-spacing:-.3px;
+  color:rgba(255,255,255,.72);text-shadow:0 0 10px rgba(255,255,255,.25);animation:fcPlus 2.1s cubic-bezier(.25,.6,.3,1) both}
+/* beim Aufsteigen „auflösen“: wird unscharf, die Ziffern driften auseinander und verblassen */
+@keyframes fcPlus{
+  0%{opacity:0;transform:translateY(4px);filter:blur(2px);letter-spacing:-.3px}
+  12%{opacity:.85;transform:translateY(0);filter:blur(0);letter-spacing:-.3px}
+  100%{opacity:0;transform:translateY(-14px) scale(1.05);filter:blur(9px);letter-spacing:8px}}
+@media (prefers-reduced-motion:reduce){.fc-plus{animation-duration:1.4s}}
+/* Partikel hinter der Karte + kurzes Aufleuchten nach dem Hochzählen */
+.fc-burst{position:absolute;inset:0;pointer-events:none}
+.fc-burst i{position:absolute;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;background:var(--c);
+  box-shadow:0 0 6px 1px var(--c);opacity:0;animation:fcFly 2s cubic-bezier(.15,.7,.3,1) both}
+@keyframes fcFly{0%{opacity:0;transform:translate(0,0) scale(.4)}15%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1)}}
+.fc-flash{position:absolute;inset:0;z-index:6;border-radius:inherit;pointer-events:none;mix-blend-mode:screen;opacity:0;
+  background:radial-gradient(90% 120% at 50% 30%,rgba(255,236,190,.55),rgba(255,170,90,.25) 50%,transparent 80%);animation:fcFlash 1.2s ease-out both}
+@keyframes fcFlash{0%{opacity:0}22%{opacity:1}100%{opacity:0}}
+.fcard{position:relative;overflow:hidden;isolation:isolate;width:100%;aspect-ratio:1.586;container-type:inline-size;border-radius:3.7% / 5.87%;
+  padding:5.2% 5.8%;display:flex;flex-direction:column;color:#fff;transform-style:flat;will-change:transform;transform:translateZ(0);
+  -webkit-font-smoothing:antialiased;
+  background:radial-gradient(85% 75% at 100% 100%,#ff8a1a 0%,rgba(255,100,20,.65) 24%,transparent 58%),linear-gradient(118deg,#070506 0%,#110a0b 30%,#3a090a 50%,#a8190b 73%,#ff560e 100%);
+  box-shadow:0 14px 36px -20px rgba(255,70,20,.3),0 0 18px -6px rgba(255,90,30,.45),inset 0 1px 0 rgba(255,255,255,.12)}
+.fcard::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.12) 46%,transparent 58%);transform:translateX(-130%);animation:shine 6s ease-in-out 1.2s infinite}
+.fcard::after{content:"";position:absolute;z-index:-1;width:75cqw;height:75cqw;right:-26cqw;top:-44cqw;border-radius:50%;border:1px solid rgba(255,255,255,.08);box-shadow:0 0 0 12cqw rgba(255,255,255,.025),0 0 0 24cqw rgba(255,255,255,.02)}
+.fc-glare{position:absolute;inset:-40%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(255,255,255,.22),transparent 70%);
+  transform:translate(var(--gx,0%),var(--gy,0%));opacity:var(--go,.35);mix-blend-mode:soft-light}
+.fc-chrome{position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;opacity:var(--co,0);mix-blend-mode:screen;
+  background:linear-gradient(115deg,transparent 33%,rgba(235,240,248,.5) 36.5%,rgba(255,255,255,.85) 37.5%,rgba(235,240,248,.4) 38.5%,transparent 41%,transparent 44%,rgba(220,228,240,.35) 45.5%,transparent 47.5%);
+  background-size:260% 260%;background-position:var(--cx,50%) var(--cy,50%)}
+.fc-chrome::after{content:"";position:absolute;inset:0;border-radius:inherit;mix-blend-mode:screen;opacity:.5;
+  background:linear-gradient(115deg,transparent 34%,rgba(255,190,160,.45) 36%,rgba(180,215,255,.45) 39%,rgba(255,240,190,.35) 41.5%,transparent 43.5%);background-size:260% 260%;background-position:var(--cx,50%) var(--cy,50%)}
+/* Grosses Hologramm-Sparschwein in der Kartenmitte: nur beim Neigen sichtbar, schraffiert wie ein Ausweis-Kippbild */
+.fc-bigpig{position:absolute;z-index:-1;pointer-events:none;left:7.5%;top:61%;width:24%;aspect-ratio:1;opacity:calc(var(--ho,0) * .42);mix-blend-mode:screen;
+  background:linear-gradient(var(--ha,160deg),#7dffb5,#5fe4ff 28%,#b392ff 52%,#ff9bd6 74%,#fff07a);background-size:240% 240%;background-position:var(--hx,50%) var(--hy,50%);
+  -webkit-mask:var(--pig) center/contain no-repeat;mask:var(--pig) center/contain no-repeat}
+/* Rückseite (nur während der 360°-Drehung sichtbar, gespiegelt, damit sie richtig herum lesbar ist) */
+.fc-back{position:absolute;inset:0;z-index:5;display:none;border-radius:inherit;overflow:hidden;transform:scaleX(-1);color:#fff;
+  background:radial-gradient(85% 75% at 0% 100%,#ff8a1a 0%,rgba(255,100,20,.55) 24%,transparent 58%),linear-gradient(242deg,#070506 0%,#110a0b 30%,#3a090a 52%,#a8190b 76%,#ff560e 100%)}
+.fcard.back .fc-back{display:block}
+.fcard.back.bx .fc-back{transform:scaleY(-1)}
+.fc-stripe{position:absolute;left:0;right:0;top:11%;height:18%;background:linear-gradient(180deg,#0b0b0d,#1b1b1f 50%,#09090a)}
+.fc-sig{position:absolute;left:6%;top:38%;width:62%;height:14%;border-radius:1.2%;display:flex;align-items:center;justify-content:space-between;padding:0 3%;
+  background:repeating-linear-gradient(-12deg,#f3ece6 0 3px,#e6ddd5 3px 6px);color:#2a1a14;font-size:3.6cqw}
+.fc-sig span{font-family:"Brush Script MT","Segoe Script",cursive;font-size:4.6cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fc-sig b{font-weight:600;letter-spacing:.2cqw;font-size:3.4cqw;background:#fff;padding:.4cqw 1.4cqw;border-radius:.6cqw}
+.fc-bk-txt{position:absolute;left:6%;bottom:9%;font-size:3.2cqw;line-height:1.45;color:rgba(255,255,255,.72)}
+.fcard svg.fc-bk-logo{position:absolute;right:6%;bottom:9%;width:9cqw;height:9cqw;color:rgba(255,255,255,.85);stroke-width:1.5}
+/* Leichter Glanz: weicher Lichtkreis, der nach außen ausläuft, mit funkelnden Partikeln (wandert mit der Neigung) */
+.fc-shine{position:absolute;z-index:-1;pointer-events:none;width:78cqw;height:78cqw;left:var(--sx,55%);top:var(--sy,40%);transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,236,220,.16),rgba(255,200,170,.06) 45%,transparent 72%);
+  -webkit-mask-image:radial-gradient(closest-side,#000 25%,transparent 100%);mask-image:radial-gradient(closest-side,#000 25%,transparent 100%)}
+.fc-shine i{position:absolute;width:var(--s,2px);height:var(--s,2px);border-radius:50%;background:#fff;box-shadow:0 0 4px 1px rgba(255,240,225,.8);opacity:0;animation:twinkle 3.2s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.4)}45%{opacity:.85;transform:scale(1)}60%{opacity:.5}}
+/* Hologramm direkt auf dem Chip (durchscheinend) + Logo schimmert in Regenbogenfarben je nach Neigung */
+.fc-row{display:flex;align-items:center;gap:3.4cqw;margin-top:3.6cqw}
+.fc-row .fc-chip{margin-top:0}
+.fc-chip-holo{position:absolute;inset:0;border-radius:inherit;pointer-events:none;mix-blend-mode:color;opacity:calc(.25 + var(--ho,0) * .6);
+  background:repeating-linear-gradient(115deg,rgba(255,255,255,0) 0 .5cqw,rgba(255,255,255,.25) .5cqw .7cqw),
+    linear-gradient(115deg,#ff7ac6,#8a7bff,#52e3e1,#b9ff86,#ffd770,#ff8a5c,#ff7ac6);
+  background-size:100% 100%,320% 320%;background-position:0 0,var(--hx,50%) var(--hy,50%)}
+.fc-chip-holo::after{content:"";position:absolute;inset:0;mix-blend-mode:screen;opacity:.55;
+  background:linear-gradient(115deg,transparent 25%,rgba(150,255,210,.7) 40%,rgba(160,180,255,.6) 52%,transparent 68%);background-size:300% 300%;background-position:var(--hx,50%) var(--hy,50%)}
+/* Ausweis-Hologramm: durchsichtiges Feld mit Emblemen und Guilloche-Linien, erscheint erst beim Neigen, Farben wandern mit dem Winkel */
+.fc-idholo{position:absolute;z-index:-1;pointer-events:none;right:0;top:0;width:16.9%;height:100%;opacity:var(--ho,0);mix-blend-mode:screen}
+.fc-idholo::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(var(--ha,160deg),rgba(110,255,170,.2),rgba(90,230,255,.14) 35%,rgba(180,140,255,.13) 60%,rgba(255,230,120,.15));
+  box-shadow:inset 1px 0 0 rgba(170,255,210,.25),inset -1px 0 0 rgba(170,255,210,.25)}
+.fc-idholo::after{content:"";position:absolute;inset:0;opacity:.8;
+  background:linear-gradient(var(--ha,160deg),#7dffb5,#5fe4ff 30%,#b392ff 55%,#ff9bd6 75%,#fff07a);background-size:100% 260%;background-position:50% var(--hy,50%);
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 120' fill='none' stroke='white' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg transform='translate(3 3) scale(.75)'%3E%3Cpath d='M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z'/%3E%3Cpath d='M2 9v1c0 1.1.9 2 2 2h1'/%3E%3C/g%3E%3Cg transform='translate(3 27) scale(.75)'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/%3E%3C/g%3E%3Cg transform='translate(3 51) scale(.75)'%3E%3Cpath d='M4 10h12M4 14h9M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2'/%3E%3C/g%3E%3Cg transform='translate(3 75) scale(.75)'%3E%3Cpath d='M12 3l1.8 6.2L20 12l-6.2 1.8L12 21l-1.8-7.2L4 12l6.2-2.8z'/%3E%3C/g%3E%3Cg transform='translate(3 99) scale(.75)'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/g%3E%3C/svg%3E"),repeating-radial-gradient(circle at 340% 50%,transparent 0 1.1cqw,#000 1.1cqw 1.25cqw),repeating-radial-gradient(circle at -240% 20%,transparent 0 1.5cqw,rgba(0,0,0,.55) 1.5cqw 1.62cqw);
+  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 120' fill='none' stroke='white' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg transform='translate(3 3) scale(.75)'%3E%3Cpath d='M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z'/%3E%3Cpath d='M2 9v1c0 1.1.9 2 2 2h1'/%3E%3C/g%3E%3Cg transform='translate(3 27) scale(.75)'%3E%3Cpolygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/%3E%3C/g%3E%3Cg transform='translate(3 51) scale(.75)'%3E%3Cpath d='M4 10h12M4 14h9M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2'/%3E%3C/g%3E%3Cg transform='translate(3 75) scale(.75)'%3E%3Cpath d='M12 3l1.8 6.2L20 12l-6.2 1.8L12 21l-1.8-7.2L4 12l6.2-2.8z'/%3E%3C/g%3E%3Cg transform='translate(3 99) scale(.75)'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/g%3E%3C/svg%3E"),repeating-radial-gradient(circle at 340% 50%,transparent 0 1.1cqw,#000 1.1cqw 1.25cqw),repeating-radial-gradient(circle at -240% 20%,transparent 0 1.5cqw,rgba(0,0,0,.55) 1.5cqw 1.62cqw);
+  -webkit-mask-size:8cqw 40cqw,100% 100%,100% 100%;mask-size:8cqw 40cqw,100% 100%,100% 100%;
+  -webkit-mask-repeat:repeat-y,no-repeat,no-repeat;mask-repeat:repeat-y,no-repeat,no-repeat;
+  -webkit-mask-position:50% 4.882cqw,0 0,0 0;mask-position:50% 4.882cqw,0 0,0 0}
+.fc-top{display:flex;justify-content:space-between;align-items:center;height:6cqw;font-size:4.1cqw;color:rgba(255,255,255,.85)}
+.fcard svg.fc-logo{width:6cqw;height:6cqw;color:hsl(var(--hue,20) 95% 82%);stroke-width:1.7;filter:drop-shadow(0 0 3px hsla(var(--hue,20),95%,70%,.55))}
+.fc-amt{font-size:12.2cqw;font-weight:600;letter-spacing:-.1cqw;line-height:1.1;margin-top:2cqw;font-variant-numeric:tabular-nums;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.fc-amt .dec{color:rgba(255,255,255,.45)}
+/* Gold-Zähler: goldene Kopie der Zahl liegt darüber und wird beim Hochzählen eingeblendet, weißer Text weich ausgeblendet */
+.fc-amt{position:relative;transition:color .9s ease,text-shadow .9s ease}
+.fc-amt .dec{transition:color .9s ease}
+.fc-amt::after{content:attr(data-g);position:absolute;left:0;top:0;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .9s ease;
+  background:linear-gradient(100deg,#d9a441 0%,#f7d77c 12%,#fffbe8 24%,#ffe08a 36%,#e3ae45 50%,#ffe7a3 64%,#fffdf2 76%,#f2c45f 88%,#d9a441 100%);
+  background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 1.4cqw rgba(255,205,100,.6)) drop-shadow(0 1px 1px rgba(90,50,0,.45));animation:goldShine 1.8s linear infinite}
+/* Glanz: heller Lichtstreif, der während des Hochzählens über die Ziffern huscht */
+.fc-amt::before{content:attr(data-g);position:absolute;left:0;top:0;z-index:1;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .9s ease;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.35) 45%,#fff 50%,rgba(255,255,255,.35) 55%,transparent 62%);
+  background-size:300% 100%;background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 1cqw rgba(255,255,255,.7));animation:goldGlint 1.3s cubic-bezier(.4,0,.2,1) infinite}
+.fc-amt.gold{color:rgba(255,255,255,0);text-shadow:none;transition:color .25s ease,text-shadow .25s ease}
+.fc-amt.gold .dec{color:rgba(255,255,255,0);transition:color .25s ease}
+.fc-amt.gold::after,.fc-amt.gold::before{opacity:1;transition:opacity .25s ease}
+@keyframes goldShine{from{background-position:200% 0}to{background-position:0 0}}
+@keyframes goldGlint{0%{background-position:120% 0}70%,100%{background-position:-20% 0}}
+@media (prefers-reduced-motion:reduce){.fc-amt::after,.fc-amt::before{animation:none}}
+.fc-chip{width:11cqw;height:8.2cqw;border-radius:1.8cqw;margin-top:3.6cqw;position:relative;overflow:hidden;flex:none;
+  background:linear-gradient(135deg,#d9d9de,#8f8f98 30%,#f4f4f8 45%,#8a8a94 58%,#e9e9ee 72%,#9a9aa3);background-size:220% 220%;background-position:var(--cx,50%) var(--cy,50%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
+.fc-chip i{position:absolute;left:0;right:0;height:1px;background:rgba(0,0,0,.28)}
+.fc-chip i:nth-child(1){top:33%}.fc-chip i:nth-child(2){top:66%}
+.fc-chip i:nth-child(3){top:0;bottom:0;left:50%;right:auto;width:1px;height:auto}
+.fc-bot{display:flex;justify-content:space-between;align-items:flex-end;gap:3cqw;margin-top:auto}
+.fc-bot small{display:block;font-size:3.5cqw;color:rgba(255,255,255,.68);margin-bottom:.8cqw}
+.fc-bot b{font-size:4.4cqw;font-weight:600;letter-spacing:.18cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:52cqw;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.fc-r{text-align:right;font-size:4.1cqw;color:rgba(255,255,255,.88);white-space:nowrap}
+.fc-r svg{color:#ffd29a;width:4.2cqw;height:4.2cqw}
+.fc-acts{position:relative;isolation:isolate;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:18px;padding:16px 0 20px}
+.fc-acts::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);z-index:-1;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(0,0,0,.18),transparent);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,rgba(0,0,0,.6) 55%,transparent 100%);mask-image:linear-gradient(to bottom,#000 0%,rgba(0,0,0,.6) 55%,transparent 100%)}
+
+.fc-acts button{position:relative}
+.fc-acts button+button::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:1px;pointer-events:none;
+  background:linear-gradient(to bottom,transparent,rgba(255,255,255,.16) 35%,rgba(255,255,255,.16) 55%,transparent);transform:scaleX(.5);transform-origin:left}
+.fc-acts button{display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:0;padding:0;font-size:12.5px;color:rgba(246,243,248,.62);letter-spacing:.1px}
+.fc-acts button span{height:30px;display:grid;place-items:center;color:#fff;transition:transform .15s,opacity .15s}
+/* Einzahlen: Sparschwein mit Plus, hologrammartig schimmernd */
+.fc-acts button.fc-holo-act span{position:relative}
+.fc-acts button.fc-holo-act span::before{content:"";position:absolute;width:46px;height:46px;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;z-index:-1;
+  background:conic-gradient(from var(--ha2,0deg),rgba(255,122,198,.28),rgba(138,123,255,.24),rgba(82,227,225,.26),rgba(185,255,134,.22),rgba(255,215,112,.26),rgba(255,122,198,.28));
+  filter:blur(9px);animation:holoSpin 4s linear infinite}
+.fc-acts button.fc-holo-act svg{width:27px;height:27px;stroke-width:1.5}
+.fc-acts button.fc-holo-act em{font-style:normal;font-weight:500;
+  background:linear-gradient(100deg,#ff9ad5,#b392ff 22%,#5fe4ff 42%,#7dffb5 60%,#fff07a 78%,#ff9ad5);background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:holoText 3.2s linear infinite}
+@property --ha2{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes holoSpin{to{--ha2:360deg}}
+@keyframes holoText{from{background-position:220% 0}to{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){.fc-acts button.fc-holo-act span::before,.fc-acts button.fc-holo-act em{animation:none}}
+.fc-acts button svg{width:24px;height:24px;stroke-width:1.6}
+
+
+.fc-acts button:active span{transform:scale(.85);opacity:.6}
+
+@media (prefers-reduced-motion:reduce){.fcard::before,.fc-shine i{animation:none}.fc-shine i{opacity:.4}}
+/* Finanzen: Flächen im Stil der Karte (dunkel, warmer Rot-Orange-Schimmer) */
+.fin{--glass:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015) 60%,rgba(255,255,255,.02));
+  --edge:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.04) 35%,transparent 60%,rgba(255,110,40,.38))}
+.fin .goal{background:radial-gradient(120% 160% at 100% 0%,rgba(255,90,30,.13),transparent 55%),linear-gradient(110deg,var(--gct,transparent),transparent 38%),var(--glass);
+  --edge:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.04) 35%,transparent 60%,rgba(255,110,40,.38))}
+.fin .goal.won{background:radial-gradient(120% 160% at 100% 0%,rgba(255,192,105,.2),transparent 60%),var(--glass);--edge:linear-gradient(160deg,rgba(255,210,140,.6),transparent 50%,rgba(255,150,60,.45))}
+.fin .section-h span:first-child{background:linear-gradient(90deg,#fff 30%,rgba(255,196,160,.9));-webkit-background-clip:text;background-clip:text;color:transparent}
+.fin .section-h::after{background:linear-gradient(90deg,rgba(255,255,255,.14),rgba(255,110,40,.22) 40%,transparent 80%)}
+.fin .add-btn{border-color:rgba(255,150,90,.35);background:linear-gradient(135deg,rgba(255,90,30,.3),rgba(200,40,20,.22))}
+.fin .ftable thead tr{background:linear-gradient(90deg,rgba(255,90,30,.22),rgba(255,140,60,.06) 60%,transparent)}
+.fin .tbl-wrap{background:radial-gradient(120% 80% at 100% 0%,rgba(255,90,30,.08),transparent 60%),var(--glass)}
+.fin .chart-card{background:linear-gradient(180deg,rgba(255,90,30,.12),rgba(200,40,20,.04) 45%,rgba(255,255,255,.01))}
+.fin .bdg.on .bi{background:conic-gradient(from 200deg,#ff9a2e,#e8341c,#ffc069,#ff6a2e,#ff9a2e);box-shadow:0 8px 24px rgba(255,90,30,.45)}
+.fin .bdg.on .bi::before{background:linear-gradient(160deg,#ff8a2a,#d9301a)}
+.fin .info{background:radial-gradient(120% 140% at 0% 0%,rgba(255,110,40,.12),transparent 60%),var(--glass);--edge:linear-gradient(120deg,rgba(255,140,80,.5),transparent 60%)}
+.fin .btn.primary{background:#fff;box-shadow:0 10px 26px -10px rgba(255,110,50,.55)}
+.fin .bk-stat{background:radial-gradient(120% 120% at 50% 0%,rgba(255,90,30,.08),transparent 60%),var(--glass)}
+.fin .rate{background:radial-gradient(120% 160% at 100% 0%,rgba(255,140,50,.16),transparent 55%),var(--glass);--edge:linear-gradient(140deg,rgba(255,192,105,.7),rgba(255,192,105,.08) 45%,transparent 65%,rgba(255,110,40,.3))}
+.fin .fgroup{background:var(--glass)}
+/* Verlauf (Kurs-Chart-Stil) */
+.vl{margin-top:30px}
+.vl-h{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:500}
+.vl-h small{color:var(--muted);font-size:13px;font-weight:400}
+.vl-coin{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#ff9a2e,#e8341c)}
+.vl-coin svg{width:14px;height:14px;stroke-width:2}
+.vl-amt{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:40px;font-weight:500;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.15}
+.vl-amt .dec{color:rgba(255,255,255,.4)}
+.vl-chg{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:500;letter-spacing:0}
+.vl-chg.up{color:var(--ok)}.vl-chg.down{color:#ff5a4e}
+.vl-chg em{font-style:normal;color:var(--muted);font-weight:400;margin-left:4px}
+.vl-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:16px 0 8px}
+.vl-tabs{display:flex;gap:2px}
+.vl-tabs button{height:32px;min-width:38px;padding:0 9px;border-radius:10px;border:0;background:none;color:var(--muted);font-size:14px;font-weight:500;display:grid;place-items:center}
+.vl-tabs button.on{background:rgba(255,255,255,.1);color:#fff}
+svg.vlc{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+svg.vlc text{fill:rgba(246,243,248,.45);font:10.5px "Outfit",sans-serif}
+svg.vlc .ln{fill:none;stroke:#fff;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.2s ease-out forwards;filter:drop-shadow(0 0 6px rgba(255,255,255,.35))}
+svg.vlc .ar{animation:fade 1.2s ease-out both}
+@media (prefers-reduced-motion:reduce){svg.vlc .ln{animation:none;stroke-dashoffset:0}}
+/* Belohnungen */canvas.confetti{position:fixed;inset:0;width:100%;height:100%;z-index:90;pointer-events:none}
+.cheer{position:fixed;left:50%;top:38%;z-index:91;transform:translate(-50%,-50%);text-align:center;pointer-events:none;animation:cheer 2.2s cubic-bezier(.2,.8,.2,1) forwards}
+.cheer b{display:block;font-size:64px;font-weight:600;letter-spacing:-2px;background:linear-gradient(135deg,#9ff0c8,#fff 40%,#f6a8d8);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 24px rgba(217,70,143,.6))}
+.cheer span{display:inline-block;margin-top:4px;padding:8px 16px;border-radius:999px;background:rgba(36,27,44,.92);border:1px solid var(--line);font-size:16px;font-weight:500}
+@keyframes cheer{0%{opacity:0;transform:translate(-50%,-30%) scale(.5)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-70%) scale(1)}}
+.ms-bg{position:fixed;inset:0;z-index:89;background:rgba(8,6,12,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:grid;place-items:center;padding:24px;animation:fade .25s}
+.ms{width:100%;max-width:340px;text-align:center;padding:30px 22px 22px;border-radius:30px;border:1px solid rgba(255,255,255,.16);
+  background:radial-gradient(100% 70% at 50% 0%,rgba(217,70,143,.45),transparent 70%),linear-gradient(160deg,rgba(139,92,255,.35),rgba(27,21,33,.95));animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+.ms .mi{width:96px;height:96px;border-radius:50%;margin:0 auto 14px;display:grid;place-items:center;background:var(--grad);color:#fff;box-shadow:0 0 0 10px rgba(217,70,143,.15),0 14px 40px rgba(201,70,160,.6);animation:wob 1.6s ease-in-out infinite}
+.ms .mi svg{width:46px;height:46px;stroke-width:1.6}
+.ms h2{margin:0;font-size:30px;font-weight:600;letter-spacing:-.5px}
+.ms p{color:var(--muted);margin:8px 0 20px}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg) scale(1.05)}}
+@media (prefers-reduced-motion:reduce){.cheer,.ms,.ms .mi,svg.chart .ln,svg.chart .bar,.ring .rg,.goal .gbar i{animation:none!important}svg.chart .ln{stroke-dashoffset:0}}
+.toast{position:fixed;left:50%;bottom:calc(112px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(36,27,44,.95);border:1px solid var(--line);color:#fff;padding:10px 18px;border-radius:999px;font-size:15px;z-index:80;max-width:calc(100% - 32px);text-align:center;animation:fade .2s}
+/* ===== Finanzen-App: eigenes Farbschema (dunkel mit Rot-Orange-Glut) ===== */
+:root{--bg:#060304;--grad:linear-gradient(135deg,#ff9a2e 0%,#e8341c 100%);--accent:#ffc49a}
+html{background:#060304}
+body::before{background:
+  radial-gradient(70% 45% at 108% 6%,rgba(255,90,30,.2),transparent 70%),
+  radial-gradient(60% 40% at -12% 40%,rgba(200,40,20,.14),transparent 70%),
+  radial-gradient(80% 50% at 60% 112%,rgba(255,110,40,.12),transparent 70%),#060304}
+.nav .scan{background:linear-gradient(135deg,#ff9a2e,#e8341c);box-shadow:0 10px 28px rgba(255,90,30,.5)}
+.nav-fade{background:linear-gradient(to top,rgba(6,3,4,.94) 0%,rgba(6,3,4,.6) 45%,rgba(6,3,4,0) 100%)}
+.top{background:rgba(6,3,4,.55)}
+.orb{background:radial-gradient(circle at 62% 46%,#060304 56%,rgba(255,140,60,.85) 63.5%,rgba(210,60,20,.35) 68%,transparent 74%)}
+.orb::after{background:radial-gradient(circle at 70% 50%,rgba(255,110,40,.35),transparent 62%)}
+.pf-badge{background:linear-gradient(135deg,#ff9a2e,#e8341c)}
+.btn-text.strong{color:#ffb98a}
+.upd{background:linear-gradient(135deg,rgba(255,110,40,.3),rgba(200,40,20,.24))}
+.upd .gi{background:linear-gradient(135deg,#ff9a2e,#e8341c)}
+.onb-logo svg{color:#ffb070}
+.set-row-i{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;background:rgba(255,110,40,.16);color:#ffb070}
+.set-row-i svg{width:19px;height:19px}
+.import-card{display:flex;gap:12px;align-items:center;margin-top:14px;padding:14px;border-radius:20px;border:1px solid rgba(255,150,90,.35);
+  background:radial-gradient(120% 140% at 100% 0%,rgba(255,110,40,.18),transparent 60%),rgba(255,255,255,.04)}
+.import-card b{display:block;font-weight:500}
+.import-card small{color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<input type="file" id="avatarInput" accept="image/*" hidden>
+<input type="file" id="importInput" accept=".json,application/json" hidden>
+<script>
+'use strict';
+// Bei jeder neuen Version erhöhen – daran erkennt die App, dass es ein Update gibt.
+const APP_VERSION = '2026.11.23-13';
+/* ---------- Helfer ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const nextFrame = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
+function localISO(d = new Date()) { return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); }
+const fmtDate = s => s ? new Date(s + 'T00:00').toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit', year:'numeric'}) : '';
+const fmtSize = b => b > 1e6 ? (b / 1e6).toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round(b / 1e3)) + ' KB';
+const safeName = s => (String(s || 'Dokument').replace(/[\\/:*?"<>|\n\r\t]/g, '-').trim() || 'Dokument').slice(0, 80);
+const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const IS_STANDALONE = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+
+// Lucide-Icons (lucide-static 0.460.0, ISC-Lizenz), identisch mit lucide-react
+const LUCIDE = {
+  'download': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" />',
+  'hard-drive': '<line x1="22" x2="2" y1="12" y2="12" /><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /><line x1="6" x2="6.01" y1="16" y2="16" /><line x1="10" x2="10.01" y1="16" y2="16" />',
+  'contact': '<path d="M16 2v2" /><path d="M7 22v-2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" /><path d="M8 2v2" /><circle cx="12" cy="11" r="3" /><rect x="3" y="4" width="18" height="18" rx="2" />',
+  'file-pen-line': '<path d="m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2" /><path d="M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z" /><path d="M8 18h1" />',
+  'shopping-bag': '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" />',
+  'credit-card': '<rect width="20" height="14" x="2" y="5" rx="2" /><line x1="2" x2="22" y1="10" y2="10" />',
+  'layout-grid': '<rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="14" y="3" rx="1" /><rect width="7" height="7" x="14" y="14" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" />',
+  'list': '<path d="M3 12h.01" /><path d="M3 18h.01" /><path d="M3 6h.01" /><path d="M8 12h13" /><path d="M8 18h13" /><path d="M8 6h13" />',
+  'user': '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />',
+  'settings': '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" />',
+  'search': '<circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />',
+  'camera': '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" /><circle cx="12" cy="13" r="3" />',
+  'plus': '<path d="M5 12h14" /><path d="M12 5v14" />',
+  'image': '<rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />',
+  'share': '<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" x2="12" y1="2" y2="15" />',
+  'trash-2': '<path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" />',
+  'chevron-left': '<path d="m15 18-6-6 6-6" />',
+  'chevron-right': '<path d="m9 18 6-6-6-6" />',
+  'x': '<path d="M18 6 6 18" /><path d="m6 6 12 12" />',
+  'rotate-cw': '<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" />',
+  'check': '<path d="M20 6 9 17l-5-5" />',
+  'circle': '<circle cx="12" cy="12" r="10" />',
+  'circle-check': '<circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" />',
+  'maximize': '<path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" />',
+  'wand-sparkles': '<path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72" /><path d="m14 7 3 3" /><path d="M5 6v4" /><path d="M19 14v4" /><path d="M10 2v2" /><path d="M7 8H3" /><path d="M21 16h-4" /><path d="M11 3H9" />',
+  'house': '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />',
+  'bell': '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />',
+  'folder-plus': '<path d="M12 10v6" /><path d="M9 13h6" /><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />',
+  'file-text': '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" />',
+  'cloud-upload': '<path d="M12 13v8" /><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="m8 17 4-4 4 4" />',
+  'trending-up': '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" />',
+  'sparkles': '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" /><path d="M20 3v4" /><path d="M22 5h-4" /><path d="M4 17v2" /><path d="M5 18H3" />',
+  'arrow-right': '<path d="M5 12h14" /><path d="m12 5 7 7-7 7" />',
+  'mail': '<rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />',
+  'party-popper': '<path d="M5.8 11.3 2 22l10.7-3.79" /><path d="M4 3h.01" /><path d="M22 8h.01" /><path d="M15 2h.01" /><path d="M22 20h.01" /><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10" /><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17" /><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7" /><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z" />',
+  'triangle-alert': '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" />',
+  'folder-open': '<path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" />',
+  'search-x': '<path d="m13.5 8.5-5 5" /><path d="m8.5 8.5 5 5" /><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />',
+  'folder': '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />',
+  'receipt': '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" /><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" /><path d="M12 17.5v-11" />',
+  'wallet': '<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" /><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />',
+  'shield-check': '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /><path d="m9 12 2 2 4-4" />',
+  'landmark': '<line x1="3" x2="21" y1="22" y2="22" /><line x1="6" x2="6" y1="18" y2="11" /><line x1="10" x2="10" y1="18" y2="11" /><line x1="14" x2="14" y1="18" y2="11" /><line x1="18" x2="18" y1="18" y2="11" /><polygon points="12 2 20 7 4 7" />',
+  'heart-pulse': '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27" />',
+  'briefcase': '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /><rect width="20" height="14" x="2" y="6" rx="2" />',
+  'package': '<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" /><path d="M12 22V12" /><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7" /><path d="m7.5 4.27 9 5.15" />',
+  'car': '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" /><circle cx="7" cy="17" r="2" /><path d="M9 17h6" /><circle cx="17" cy="17" r="2" />',
+  'smartphone': '<rect width="14" height="20" x="5" y="2" rx="2" ry="2" /><path d="M12 18h.01" />',
+  'zap': '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" />',
+  'graduation-cap': '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" /><path d="M22 10v6" /><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" />',
+  'baby': '<path d="M9 12h.01" /><path d="M15 12h.01" /><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5" /><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1" />',
+  'paw-print': '<circle cx="11" cy="4" r="2" /><circle cx="18" cy="8" r="2" /><circle cx="20" cy="16" r="2" /><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z" />',
+  'plane': '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />',
+  'scale': '<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" /><path d="M7 21h10" /><path d="M12 3v18" /><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />',
+  'euro': '<path d="M4 10h12" /><path d="M4 14h9" /><path d="M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2" />',
+  'gift': '<rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13" /><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" />',
+  'wrench': '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />',
+  'dumbbell': '<path d="M14.4 14.4 9.6 9.6" /><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z" /><path d="m21.5 21.5-1.4-1.4" /><path d="M3.9 3.9 2.5 2.5" /><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z" />',
+  'book-open': '<path d="M12 7v14" /><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />',
+  'heart': '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />',
+  'piggy-bank': '<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z" /><path d="M2 9v1c0 1.1.9 2 2 2h1" /><path d="M16 11h.01" />',
+  'trophy': '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />',
+  'flame': '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />',
+  'target': '<circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />',
+  'coins': '<circle cx="8" cy="8" r="6" /><path d="M18.09 10.37A6 6 0 1 1 10.34 18" /><path d="M7 6h1v4" /><path d="m16.71 13.88.7.71-2.82 2.82" />',
+  'copy': '<rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />',
+  'arrow-left-right': '<path d="M8 3 4 7l4 4" /><path d="M4 7h16" /><path d="m16 21 4-4-4-4" /><path d="M20 17H4" />',
+  'repeat': '<path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" />',
+  'calendar': '<path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" />',
+  'external-link': '<path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />',
+  'arrow-down': '<path d="M12 5v14" /><path d="m19 12-7 7-7-7" />',
+  'arrow-up-right': '<path d="M7 7h10v10" /><path d="M7 17 17 7" />',
+  'activity': '<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" />',
+  'chart-column': '<path d="M3 3v16a2 2 0 0 0 2 2h16" /><path d="M18 17V9" /><path d="M13 17V5" /><path d="M8 17v-3" />',
+  'trending-down': '<polyline points="22 17 13.5 8.5 8.5 13.5 2 7" /><polyline points="16 17 22 17 22 11" />',
+  'clock': '<circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />',
+};
+
+// Ein Lucide-Icon als SVG (gleiche Werte wie lucide-react: 24×24, stroke currentColor, runde Enden)
+const lucide = (name, cls = 'i', style = '') =>
+  `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"${style ? ` style="${style}"` : ''}>${LUCIDE[name] || LUCIDE.folder}</svg>`;
+const ICON = {
+  gear: lucide('settings'), search: lucide('search'), camera: lucide('camera'), plus: lucide('plus'),
+  photo: lucide('image'), share: lucide('share'), trash: lucide('trash-2'), back: lucide('chevron-left'),
+  up: lucide('chevron-left'), x: lucide('x'), rotate: lucide('rotate-cw'), check: lucide('check'),
+  circle: lucide('circle'), checkc: lucide('circle-check'), expand: lucide('maximize'), wand: lucide('wand-sparkles'),
+  home: lucide('house'), bell: lucide('bell'), folderPlus: lucide('folder-plus'), file: lucide('file-text'),
+  cloud: lucide('cloud-upload'), trend: lucide('trending-up'), spark: lucide('sparkles'), arrow: lucide('arrow-right'),
+  chev: lucide('chevron-right', 'i chev'), chevS: lucide('chevron-right', 'i sm'),
+};
+const LOGO = lucide('piggy-bank', 'i logo');
+// Großes Icon für leere Ansichten
+const emptyIcon = name => `<div class="big">${lucide(name, 'i empty-i')}</div>`;
+const folderIcon = (f, size = 42) => `<div class="ico" style="width:${size}px;height:${size}px;background:${f.color}2e;color:${f.color}">${lucide(f.icon || 'folder', 'i', `width:${Math.round(size * .5)}px;height:${Math.round(size * .5)}px`)}</div>`;
+const COLORS = ['#6ea8ff','#4be39b','#a98bff','#ffc069','#ff7a8a','#5fd4e0','#f08bd0','#a3b1c6','#b9b3c4'];
+
+/* ---------- Datenbank (IndexedDB, nur auf dem Gerät) ---------- */
+const dbp = new Promise((res, rej) => {
+  const r = indexedDB.open('finanzen', 1);
+  r.onupgradeneeded = () => r.result.createObjectStore('blobs', {keyPath: 'id'});
+  r.onsuccess = () => res(r.result);
+  r.onerror = () => rej(r.error);
+});
+function tx(store, mode, fn) {
+  return dbp.then(d => new Promise((res, rej) => {
+    const t = d.transaction(store, mode); let out;
+    const r = fn(t.objectStore(store));
+    if (r) r.onsuccess = () => { out = r.result; };
+    t.oncomplete = () => res(out);
+    t.onerror = () => rej(t.error);
+    t.onabort = () => rej(t.error || new Error('abgebrochen'));
+  }));
+}
+const dbGet = (s, k) => tx(s, 'readonly', st => st.get(k));
+const dbPut = (s, v) => tx(s, 'readwrite', st => st.put(v));
+
+const S = {profile: null, fin: null, meta: null, urls: []};
+const avatarIn = $('#avatarInput'), importIn = $('#importInput');
+function requestPersist() { try { navigator.storage?.persist?.(); } catch {} }
+
+async function loadAll() {
+  S.profile = (await dbGet('blobs', '__profile')) || null;
+  S.meta = (await dbGet('blobs', '__meta')) || {id: '__meta'};
+  S.fin = (await dbGet('blobs', '__finance')) || {id: '__finance', goals: [], tx: [], badges: []};
+  S.fin.goals = S.fin.goals || []; S.fin.tx = S.fin.tx || []; S.fin.badges = S.fin.badges || [];
+  await autoBook();
+}
+
+// Daten aus der Ablage-App übernehmen (liegt auf derselben Adresse → gleicher Gerätespeicher).
+// Öffnet die Ablage-Datenbank nur lesend; existiert sie nicht, wird nichts angelegt.
+function readAblage() {
+  return new Promise(resolve => {
+    let r;
+    try { r = indexedDB.open('ablage'); } catch { return resolve(null); }
+    r.onupgradeneeded = () => { try { r.transaction.abort(); } catch {} };
+    r.onerror = () => resolve(null);
+    r.onsuccess = () => {
+      const db = r.result;
+      if (!db.objectStoreNames.contains('blobs')) { db.close(); return resolve(null); }
+      const t = db.transaction('blobs'), st = t.objectStore('blobs'), out = {};
+      const a = st.get('__finance'), b = st.get('__profile');
+      a.onsuccess = () => { out.fin = a.result || null; };
+      b.onsuccess = () => { out.prof = b.result || null; };
+      t.oncomplete = () => { db.close(); resolve(out.fin && (out.fin.goals?.length || out.fin.tx?.length) || out.prof ? out : null); };
+      t.onerror = () => { db.close(); resolve(null); };
+    };
+  });
+}
+// Finanzdaten zusammenführen – gleiche Einträge (gleiche ID) werden nicht doppelt angelegt
+async function mergeFin(src) {
+  if (!src) return {g: 0, t: 0};
+  const f = S.fin, ids = a => new Set(a.map(x => x.id));
+  const gi = ids(f.goals), ti = ids(f.tx);
+  const ng = (src.goals || []).filter(x => !gi.has(x.id)), nt = (src.tx || []).filter(x => !ti.has(x.id));
+  f.goals = f.goals.concat(ng); f.tx = f.tx.concat(nt);
+  f.badges = [...new Set([...f.badges, ...(src.badges || [])])];
+  await saveFin(); requestPersist();
+  return {g: ng.length, t: nt.length};
+}
+
+// Leiste unten: Start · Neues Ziel · Einzahlen (groß) · Überweisen · Einstellungen
+// Keine Leiste unten: Einzahlen, Entnahme, Überweisen und Sparkasse sitzen unter der Karte, Einstellungen oben rechts
+function bottomNav() { return ''; }
+function updateCard() {
+  if (!updateReady) return '';
+  return `<div class="upd"><div class="h"><div class="gi">${ICON.spark}</div>
+    <div><b>Neue Version verfügbar</b><small>Deine Sparziele und Buchungen bleiben erhalten.</small></div></div>
+    <div class="cta"><button class="go" data-act="applyUpdate">Jetzt aktualisieren</button>
+    <button class="arrow" data-act="applyUpdate" aria-label="Jetzt aktualisieren">${ICON.arrow}</button></div></div>`;
+}
+/* ---------- Navigation ---------- */
+const app = $('#app');
+const stack = [{view: 'home', params: {}}];
+const views = {};
+const cur = () => stack[stack.length - 1];
+function go(view, params = {}) { cur().scroll = scrollY; stack.push({view, params}); render(); }
+function back() { if (stack.length > 1) stack.pop(); render(true); }
+function resetTo(...entries) { stack.length = 0; entries.forEach(e => stack.push(e)); render(); }
+function render(restore) {
+  S.urls.forEach(u => URL.revokeObjectURL(u)); S.urls = [];
+  const c = cur();
+  views[c.view](c.params || {});
+  scrollTo(0, restore ? (c.scroll || 0) : 0);
+}
+function setView(html) { app.innerHTML = html; }
+
+/* ---------- UI-Bausteine ---------- */
+function toast(msg) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2600);
+}
+// Optionen: {label, danger, run}. "run" läuft direkt im Tipp (wichtig für Kamera/Teilen auf iOS).
+function sheet(title, options) {
+  const m = document.createElement('div'); m.className = 'sheet-bg';
+  m.innerHTML = `<div class="sheet">${title ? `<div class="sheet-t">${esc(title)}</div>` : ''}${options.map((o, i) =>
+    `<button data-i="${i}" class="${o.danger ? 'danger' : ''}">${esc(o.label)}</button>`).join('')}</div>
+    <button class="sheet-cancel" data-i="-1">Abbrechen</button>`;
+  m.addEventListener('click', e => {
+    const b = e.target.closest('[data-i]');
+    if (!b && e.target !== m) return;
+    m.remove();
+    const i = b ? +b.dataset.i : -1;
+    if (i >= 0) options[i].run();
+  });
+  document.body.appendChild(m);
+}
+const confirmSheet = (title, label, run) => sheet(title, [{label, danger: true, run}]);
+function greeting() { const h = new Date().getHours(); return h < 11 ? 'Guten Morgen' : h < 18 ? 'Guten Tag' : 'Guten Abend'; }
+/* Erster Start: Willkommen (Schritt 1) und Profil (Schritt 2) */
+views.onboarding = ({step}) => {
+  if (step === 2) return profileForm(true);
+  setView(`
+  <div class="onb">
+    <div class="orb"></div>
+    <div class="onb-logo">${lucide('file-text')}Ablage</div>
+    <h1 class="onb-h"><span class="dim">Deine</span><br>Briefe<br><span class="dim">einfach</span><br>geordnet</h1>
+    <p class="onb-p">Scannen, als PDF ablegen und Fristen im Blick behalten. Alles bleibt auf deinem iPhone.</p>
+    <div class="dots"><i></i><b></b></div>
+    <div class="cta"><button class="go" data-act="onbNext">Los geht's</button><button class="arrow" data-act="onbNext" aria-label="Weiter">${ICON.arrow}</button></div>
+  </div>`);
+};
+views.profile = () => profileForm(false);
+let pfDraft = null;
+function profileForm(first) {
+  if (!pfDraft) pfDraft = {name: S.profile?.name || '', photo: S.profile?.photo || ''};
+  setView(`
+  ${first ? '' : `<header class="top"><button class="btn-text" data-act="back">${ICON.back}Zurück</button><h1>Profil</h1><button class="btn-text right strong" data-act="saveProfile">Speichern</button></header>`}
+  <div class="onb${first ? '' : ' onb-edit'}">
+    ${first ? `<div class="onb-step">Schritt 2 von 2</div><h1 class="onb-h2">Wie heißt du?</h1>
+      <p class="onb-p">Gib dir einen Namen und, wenn du magst, ein Profilbild. Beides bleibt nur auf diesem Gerät.</p>` : ''}
+    <button class="pf-av" data-act="pickAvatar" aria-label="Profilbild wählen">${pfDraft.photo ? `<img src="${pfDraft.photo}" alt="">` : lucide('user', 'i pf-user')}<span class="pf-badge">${ICON.camera}</span></button>
+    <button class="skip" data-act="${pfDraft.photo ? 'removeAvatar' : 'pickAvatar'}">${pfDraft.photo ? 'Bild entfernen' : 'Profilbild wählen'}</button>
+    <input class="pf-input" id="pfName" value="${esc(pfDraft.name)}" placeholder="Dein Name" maxlength="40" autocomplete="given-name" enterkeyhint="done">
+    ${first ? `<div class="cta" style="margin-top:auto;padding-top:40px"><button class="go" data-act="saveProfile">Fertig</button><button class="arrow" data-act="saveProfile" aria-label="Fertig">${ICON.arrow}</button></div>
+      <button class="skip" data-act="skipProfile">Später</button>` : ''}
+  </div>`);
+  const inp = $('#pfName');
+  inp.addEventListener('input', () => { pfDraft.name = inp.value; });
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); });
+}
+// Profilbild: quadratisch zuschneiden, verkleinern, als Bild-Daten speichern
+async function avatarFromFile(file) {
+  const img = await loadImage(file), s = Math.min(img.naturalWidth, img.naturalHeight), out = 320;
+  const c = newCanvas(out, out);
+  ctx2d(c).drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, out, out);
+  return c.toDataURL('image/jpeg', .85);
+}
+async function saveProfileData(name, photo) {
+  S.profile = {id: '__profile', name, photo, done: true};
+  await dbPut('blobs', S.profile);
+  pfDraft = null;
+}
+
+/* ---------- Finanzen: Sparziele, Sparpläne, Verlauf ---------- */
+// Alles liegt im Datensatz '__finance' (nur auf dem Gerät): {goals:[{id,name,icon,color,target,due,plan:{amount,day,start,auto},bank:{name,iban,purpose}}], tx:[{id,goalId,amount,date,plan?}], badges:[]}
+const GOAL_ICONS = ['piggy-bank','target','plane','car','house','gift','smartphone','graduation-cap','heart','baby','paw-print','dumbbell','book-open','briefcase','shield-check','trophy','coins','wrench','zap','euro'];
+const CHEERS = ['Stark gespart!', 'Weiter so!', 'Dein Zukunfts-Ich dankt dir.', 'Das Ziel rückt näher!', 'Läuft bei dir!', 'Jeder Euro zählt.', 'Großartig!'];
+const pad2 = n => String(n).padStart(2, '0');
+const monthKey = (d = new Date()) => localISO(d).slice(0, 7);
+function addMonths(key, n) { const [y, m] = key.split('-').map(Number), d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; }
+const monthName = (key, long) => new Date(key + '-01T00:00').toLocaleDateString('de-DE', long ? {month: 'long', year: 'numeric'} : {month: 'short'}).replace('.', '');
+const eur = (v, dec) => { v = Math.round((v || 0) * 100) / 100; const d = dec ?? (v % 1 ? 2 : 0); return v.toLocaleString('de-DE', {style: 'currency', currency: 'EUR', minimumFractionDigits: d, maximumFractionDigits: d}); };
+// „1.578,00 €“ mit abgedunkelten Cent wie auf einer Bankkarte
+const eurSplit = v => { const s = eur(v, 2), i = s.lastIndexOf(','); return `${s.slice(0, i)}<span class="dec">${s.slice(i)}</span>`; };
+function parseAmount(s) { s = String(s || '').replace(/[€\s]/g, ''); if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.'); const v = parseFloat(s); return isFinite(v) ? Math.round(v * 100) / 100 : 0; }
+const amtStr = v => v ? String(v).replace('.', ',') : '';
+const goalById = id => S.fin.goals.find(g => g.id === id);
+const goalSaved = g => S.fin.tx.reduce((s, t) => t.goalId === g.id ? s + t.amount : s, 0);
+const goalPct = g => g.target > 0 ? goalSaved(g) / g.target * 100 : 0;
+const finTotal = () => S.fin.tx.reduce((s, t) => s + t.amount, 0);
+const monthSum = key => S.fin.tx.reduce((s, t) => (t.date || '').startsWith(key) ? s + t.amount : s, 0);
+const saveFin = () => dbPut('blobs', S.fin);
+// Sparserie: Monate in Folge mit einer Einzahlung (der laufende Monat zählt mit, sobald eingezahlt)
+function finStreak() {
+  let k = monthKey(), n = 0;
+  if (monthSum(k) <= 0) k = addMonths(k, -1);
+  while (monthSum(k) > 0 && n < 600) { n++; k = addMonths(k, -1); }
+  return n;
+}
+// Fällige Sparraten (höchstens die letzten 3 Monate), sofern noch nicht verbucht oder übersprungen
+function pendingRates() {
+  const out = [], now = monthKey(), day = new Date().getDate();
+  for (const g of S.fin.goals) {
+    const p = g.plan; if (!p || !(p.amount > 0) || goalSaved(g) >= g.target) continue;
+    let k = p.start || now; if (k < addMonths(now, -2)) k = addMonths(now, -2);
+    for (; k <= now; k = addMonths(k, 1)) {
+      if (k === now && day < (p.day || 1)) break;
+      if (!S.fin.tx.some(t => t.goalId === g.id && t.plan === k)) out.push({g, key: k});
+    }
+  }
+  return out;
+}
+// Sparpläne mit Dauerauftrag: fällige Raten automatisch verbuchen
+async function autoBook() {
+  let sum = 0;
+  for (const {g, key} of pendingRates()) {
+    if (!g.plan.auto) continue;
+    S.fin.tx.push({id: uid(), goalId: g.id, amount: g.plan.amount, date: `${key}-${pad2(g.plan.day || 1)}`, plan: key, auto: true, created: Date.now()});
+    sum += g.plan.amount;
+  }
+  if (sum) { checkBadges(); await saveFin(); S.autoMsg = `Sparplan verbucht: +${eur(sum)}`; }
+}
+// Erfolge
+const BADGES = [
+  ['first', 'Erste Einzahlung', 'coins', () => S.fin.tx.some(t => t.amount > 0)],
+  ['goal', 'Ziel gesetzt', 'target', () => S.fin.goals.length > 0],
+  ['plan', 'Sparplan aktiv', 'repeat', () => S.fin.goals.some(g => g.plan?.amount > 0)],
+  ['s3', '3 Monate in Folge', 'flame', () => finStreak() >= 3],
+  ['k1', '1.000 € gespart', 'piggy-bank', () => finTotal() >= 1000],
+  ['win', 'Ziel erreicht', 'trophy', () => S.fin.goals.some(g => g.target > 0 && goalSaved(g) >= g.target)],
+  ['s12', '12 Monate in Folge', 'flame', () => finStreak() >= 12],
+  ['k10', '10.000 € gespart', 'sparkles', () => finTotal() >= 10000],
+];
+function checkBadges() {
+  const fresh = BADGES.filter(b => !S.fin.badges.includes(b[0]) && b[3]());
+  fresh.forEach(b => S.fin.badges.push(b[0]));
+  return fresh;
+}
+async function addTx(goalId, amount, extra = {}) {
+  const g = goalById(goalId), before = g ? goalPct(g) : 0;
+  const t = {id: uid(), goalId: goalId || null, amount, date: localISO(), created: Date.now(), ...extra};
+  S.fin.tx.push(t);
+  const badges = checkBadges();
+  await saveFin();
+  return {t, g, before, after: g ? goalPct(g) : 0, badges};
+}
+
+// Diagramme (SVG)
+// Jede Ansicht blendet sich beim ersten Öffnen gestaffelt ein (nicht erneut nach einer Buchung)
+function finAnim() { const c = cur(); if (c.anim) return ''; c.anim = true; return ' anim'; }
+let ringN = 0;
+function ring(pct, size, color, sw = 8) {
+  const r = (size - sw) / 2, c = 2 * Math.PI * r, off = c * (1 - clamp(pct, 0, 100) / 100), h = size / 2, gid = 'rg' + (++ringN);
+  return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="${color}"/><stop offset="1" stop-color="${color}" stop-opacity=".55"/></linearGradient></defs>
+    <circle cx="${h}" cy="${h}" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="${sw}"/>
+    <circle class="rg" cx="${h}" cy="${h}" r="${r}" fill="none" stroke="url(#${gid})" stroke-width="${sw}" stroke-linecap="round"
+      stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}" transform="rotate(-90 ${h} ${h})" style="--c:${c.toFixed(2)}"/></svg>`;
+}
+function areaChart(keys, vals) {
+  const W = 340, H = 170, T = 16, B = 26, n = vals.length, max = Math.max(...vals, 1) * 1.12;
+  const x = i => +(6 + i * (W - 12) / Math.max(n - 1, 1)).toFixed(1), y = v => +(T + (1 - v / max) * (H - T - B)).toFixed(1);
+  const p = vals.map((v, i) => [x(i), y(v)]);
+  let d = `M${p[0][0]},${p[0][1]}`;
+  for (let i = 1; i < n; i++) { const cx = ((p[i - 1][0] + p[i][0]) / 2).toFixed(1); d += ` C${cx},${p[i - 1][1]} ${cx},${p[i][1]} ${p[i][0]},${p[i][1]}`; }
+  const grid = [0.25, 0.5, 0.75].map(f => `<line x1="0" x2="${W}" y1="${y(max * f)}" y2="${y(max * f)}" stroke="rgba(255,255,255,.06)" stroke-dasharray="3 5"/>`).join('');
+  const labels = keys.map((k, i) => (n <= 7 || (n - 1 - i) % 2 === 0) ? `<text x="${x(i)}" y="${H - 6}" text-anchor="middle">${monthName(k)}</text>` : '').join('');
+  const [lx, ly] = p[n - 1];
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" aria-label="Verlauf des Ersparten">
+    <defs><linearGradient id="fa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9468f" stop-opacity=".45"/><stop offset="1" stop-color="#8b5cff" stop-opacity="0"/></linearGradient>
+    <linearGradient id="fl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8b5cff"/><stop offset="1" stop-color="#ff7ac0"/></linearGradient></defs>
+    ${grid}<path class="ar" d="${d} L${lx},${H - B} L${x(0)},${H - B} Z" fill="url(#fa)"/>
+    <path class="ln" pathLength="1" d="${d}"/>
+    <circle cx="${lx}" cy="${ly}" r="9" fill="#ff7ac0" opacity=".25"/><circle cx="${lx}" cy="${ly}" r="4.5" fill="#fff"/>
+    ${labels}</svg>`;
+}
+// Verlauf im Stil eines Kurs-Charts: großer Betrag, Zeitraum-Tabs, weiße Linie mit Achse rechts, Umsatzbalken unten, Finger-Scrubbing
+const VL_RANGES = [['1M', 30], ['3M', 91], ['6M', 182], ['1J', 365], ['Alle', 0]];
+const shortEur = v => { const a = Math.abs(v); return (a >= 1e6 ? (v / 1e6).toFixed(1).replace('.', ',') + ' Mio' : a >= 1000 ? (v / 1000).toFixed(a >= 1e4 ? 0 : 1).replace('.', ',') + 'k' : String(Math.round(v))); };
+function vlDays() { const r = VL_RANGES.find(x => x[0] === lsGet('fin.vlRange', '6M')) || VL_RANGES[2]; return r[1]; }
+function dailySeries(days) {
+  const today = new Date(localISO() + 'T00:00'), tx = S.fin.tx.filter(t => t.date).sort((a, b) => a.date.localeCompare(b.date));
+  let start = new Date(today);
+  if (days) start.setDate(start.getDate() - days + 1);
+  else { if (tx[0]) start = new Date(tx[0].date + 'T00:00'); const min = new Date(today); min.setDate(min.getDate() - 29); if (start > min) start = min; }
+  const sISO = localISO(start);
+  let run = 0, j = 0; while (j < tx.length && tx[j].date < sISO) run += tx[j++].amount;
+  const out = [];
+  for (const d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+    const iso = localISO(d); let inn = 0;
+    while (j < tx.length && tx[j].date <= iso) { run += tx[j].amount; inn += Math.max(tx[j].amount, 0); j++; }
+    out.push({d: iso, v: run, inn});
+  }
+  // auf höchstens 120 Punkte verdichten (Einzahlungen je Abschnitt aufsummieren)
+  if (out.length <= 120) return out;
+  const k = out.length / 120, res = [];
+  for (let i = 0; i < 120; i++) { const a = Math.floor(i * k), b = Math.floor((i + 1) * k); const seg = out.slice(a, b); res.push({d: seg[seg.length - 1].d, v: seg[seg.length - 1].v, inn: seg.reduce((s, x) => s + x.inn, 0)}); }
+  res[res.length - 1] = {...res[res.length - 1], ...out[out.length - 1], inn: res[res.length - 1].inn};
+  return res;
+}
+// Aus der Treppe (Einzahlungen springen) eine weiche Kurve machen: Stützpunkte an jeder Änderung,
+// dazwischen monotone kubische Interpolation (Fritsch-Carlson) – schöne Bögen ohne Über- oder Unterschwingen.
+function smoothSeries(v) {
+  const n = v.length; if (n < 3) return v.slice();
+  const kx = [0]; for (let i = 1; i < n - 1; i++) if (v[i] !== v[i - 1]) kx.push(i); if (kx[kx.length - 1] !== n - 1) kx.push(n - 1);
+  if (kx.length < 3 && v[0] === v[n - 1]) return v.slice();
+  const ky = kx.map(i => v[i]), m = kx.length, dk = [], t = new Array(m).fill(0);
+  for (let i = 0; i < m - 1; i++) dk.push((ky[i + 1] - ky[i]) / (kx[i + 1] - kx[i]));
+  t[0] = dk[0]; t[m - 1] = dk[m - 2];
+  for (let i = 1; i < m - 1; i++) t[i] = dk[i - 1] * dk[i] <= 0 ? 0 : (dk[i - 1] + dk[i]) / 2;
+  for (let i = 0; i < m - 1; i++) {
+    if (dk[i] === 0) { t[i] = t[i + 1] = 0; continue; }
+    const a = t[i] / dk[i], b = t[i + 1] / dk[i], h = a * a + b * b;
+    if (h > 9) { const s = 3 / Math.sqrt(h); t[i] = s * a * dk[i]; t[i + 1] = s * b * dk[i]; }
+  }
+  const out = new Array(n);
+  for (let k = 0; k < m - 1; k++) {
+    const x0 = kx[k], x1 = kx[k + 1], hh = x1 - x0;
+    for (let i = x0; i <= x1; i++) {
+      const u = (i - x0) / hh, u2 = u * u, u3 = u2 * u;
+      out[i] = (2 * u3 - 3 * u2 + 1) * ky[k] + (u3 - 2 * u2 + u) * hh * t[k] + (-2 * u3 + 3 * u2) * ky[k + 1] + (u3 - u2) * hh * t[k + 1];
+    }
+  }
+  return out;
+}function lineChart(pts) {
+  const W = 360, H = 230, L = 2, R = 40, T = 12, VB = 26, B = 22, CH = H - T - VB - B, n = pts.length;
+  const vals = pts.map(p => p.v); let lo = Math.min(...vals), hi = Math.max(...vals);
+  if (hi - lo < 1) { hi += 50; lo = Math.max(0, lo - 50); }
+  const pad = (hi - lo) * .12; hi += pad; lo = Math.max(lo > 0 ? 0 : lo, lo - pad);
+  const x = i => +(L + i * (W - L - R) / Math.max(n - 1, 1)).toFixed(1), y = v => +(T + (1 - (v - lo) / (hi - lo)) * CH).toFixed(1);
+  const sv = smoothSeries(pts.map(p => p.v));
+  const d = sv.map((v, i) => `${i ? 'L' : 'M'}${x(i)},${y(v)}`).join(' ');
+  const ticks = [0, 1, 2, 3].map(i => lo + (hi - lo) * (i + .5) / 4);
+  const grid = ticks.map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(255,255,255,.09)" stroke-dasharray="1 4"/><text x="${W - R + 8}" y="${y(v) + 3.5}">${shortEur(v)}</text>`).join('');
+  const last = pts[n - 1], ly = y(sv[n - 1]), lx = x(n - 1);
+  const maxIn = Math.max(...pts.map(p => p.inn), 1), bw = Math.max(1.2, (W - L - R) / n * .55);
+  const vol = pts.map((p, i) => p.inn > 0 ? `<rect x="${(x(i) - bw / 2).toFixed(1)}" y="${(H - B - p.inn / maxIn * VB).toFixed(1)}" width="${bw.toFixed(1)}" height="${(p.inn / maxIn * VB).toFixed(1)}" fill="rgba(255,255,255,.28)"/>` : `<rect x="${(x(i) - bw / 2).toFixed(1)}" y="${H - B - 2}" width="${bw.toFixed(1)}" height="2" fill="rgba(255,255,255,.08)"/>`).join('');
+  const labIdx = [0, .25, .5, .75, 1].map(f => Math.round(f * (n - 1)));
+  const fmtX = iso => { const dt = new Date(iso + 'T00:00'); return n > 100 || vlDays() === 0 || vlDays() > 100 ? dt.toLocaleDateString('de-DE', {month: 'short'}).replace('.', '') : dt.toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit'}); };
+  const xl = labIdx.map((i, k) => `<text x="${x(i)}" y="${H - 5}" text-anchor="${k === 0 ? 'start' : k === 4 ? 'end' : 'middle'}">${fmtX(pts[i].d)}</text>`).join('');
+  return `<svg class="vlc" viewBox="0 0 ${W} ${H}" data-n="${n}" data-l="${L}" data-w="${W - L - R}" aria-label="Verlauf des Ersparten">
+    <defs><linearGradient id="vla" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+    ${grid}
+    <path class="ar" d="${d} L${lx},${T + CH} L${x(0)},${T + CH} Z" fill="url(#vla)"/>
+    <path class="ln" pathLength="1" d="${d}"/>
+    <line x1="${L}" x2="${W - R}" y1="${ly}" y2="${ly}" stroke="rgba(255,255,255,.55)" stroke-dasharray="3 3"/>
+    <rect x="${W - R + 3}" y="${ly - 9}" width="${R - 3}" height="18" rx="5" fill="#fff"/><text x="${W - R / 2 + 1.5}" y="${ly + 3.5}" text-anchor="middle" style="fill:#140c0a;font-weight:600">${shortEur(last.v)}</text>
+    <circle cx="${lx}" cy="${ly}" r="9" fill="#fff" opacity=".18"/><circle cx="${lx}" cy="${ly}" r="4.5" fill="#fff"/>
+    ${vol}${xl}
+    <g class="vl-cur" style="display:none"><line y1="${T}" y2="${H - B}" stroke="rgba(255,255,255,.6)"/><circle r="5" fill="#fff" stroke="#140c0a" stroke-width="2"/></g>
+    <rect class="vl-hit" x="0" y="0" width="${W - R}" height="${H}" fill="transparent"/>
+  </svg>`;
+}
+function vlHead(v, from, label) {
+  const diff = v - from, pct = from > 0 ? diff / from * 100 : 0, up = diff >= 0;
+  return `<span data-vl-amt>${eurSplit(v)}</span><span class="vl-chg ${up ? 'up' : 'down'}">${lucide(up ? 'trending-up' : 'trending-down', 'i sm')}${from > 0 ? `${up ? '+' : ''}${pct.toFixed(2).replace('.', ',')} %` : `${up ? '+' : ''}${eur(diff)}`}${label ? ` <em>${label}</em>` : ''}</span>`;
+}
+function verlaufHtml() {
+  if (!S.fin.tx.length) return '';
+  const range = lsGet('fin.vlRange', '6M'), mode = lsGet('fin.vlMode', 'line'), pts = dailySeries(vlDays());
+  const now = monthKey(), months = vlDays() === 0 ? Math.min(24, Math.max(3, (() => { const f = S.fin.tx.map(t => t.date).filter(Boolean).sort()[0]; if (!f) return 3; const [y, m] = f.split('-').map(Number), [y2, m2] = now.split('-').map(Number); return (y2 - y) * 12 + m2 - m + 1; })())) : Math.max(1, Math.round(vlDays() / 30.4));
+  const mk = Array.from({length: months}, (_, i) => addMonths(now, i - months + 1));
+  S.vlPts = pts;
+  return `<div class="vl" id="vl">
+    <div class="vl-h"><span class="vl-coin">${lucide('piggy-bank')}</span>Gespart gesamt <small>EUR</small></div>
+    <div class="vl-amt" id="vlHead">${vlHead(pts[pts.length - 1].v, pts[0].v)}</div>
+    <div class="vl-bar">
+      <div class="vl-tabs">${VL_RANGES.map(([k]) => `<button class="${k === range ? 'on' : ''}" data-act="vlRange" data-v="${k}">${k}</button>`).join('')}</div>
+      <div class="vl-tabs"><button class="${mode === 'line' ? 'on' : ''}" data-act="vlMode" data-v="line" aria-label="Linie">${lucide('activity', 'i sm')}</button><button class="${mode === 'bars' ? 'on' : ''}" data-act="vlMode" data-v="bars" aria-label="Monatsbalken">${lucide('chart-column', 'i sm')}</button></div>
+    </div>
+    ${mode === 'bars' ? barChart(mk, mk.map(monthSum)) : lineChart(pts)}
+  </div>`;
+}
+// Mit dem Finger über das Diagramm fahren: Betrag und Datum an der Stelle anzeigen
+function vlScrub() {
+  const svg = app.querySelector('svg.vlc'); if (!svg) return;
+  const pts = S.vlPts, n = +svg.dataset.n, L = +svg.dataset.l, PW = +svg.dataset.w, cur0 = svg.querySelector('.vl-cur'), head = $('#vlHead');
+  const ys = [...svg.querySelector('.ln').getAttribute('d').matchAll(/[ML]([\d.]+),([\d.]+)/g)].map(m => [+m[1], +m[2]]);
+  const show = e => {
+    const r = svg.getBoundingClientRect(), vx = (e.clientX - r.left) / r.width * svg.viewBox.baseVal.width;
+    const i = clamp(Math.round((vx - L) / PW * (n - 1)), 0, n - 1), [px, py] = ys[i];
+    cur0.style.display = ''; cur0.querySelector('line').setAttribute('x1', px); cur0.querySelector('line').setAttribute('x2', px);
+    cur0.querySelector('circle').setAttribute('cx', px); cur0.querySelector('circle').setAttribute('cy', py);
+    head.innerHTML = vlHead(pts[i].v, pts[0].v, fmtDate(pts[i].d));
+  };
+  const hide = () => { cur0.style.display = 'none'; head.innerHTML = vlHead(pts[n - 1].v, pts[0].v); };
+  const hit = svg.querySelector('.vl-hit');
+  hit.addEventListener('pointerdown', show); hit.addEventListener('pointermove', e => { if (e.pointerType === 'mouse' || e.buttons || e.pressure) show(e); });
+  hit.addEventListener('pointerup', hide); hit.addEventListener('pointerleave', hide); hit.addEventListener('pointercancel', hide);
+}
+function barChart(keys, vals) {
+  const W = 340, H = 160, T = 22, B = 26, n = vals.length, max = Math.max(...vals.map(v => Math.max(v, 0)), 1), slot = W / n, bw = Math.min(34, slot * .58);
+  const short = v => v >= 10000 ? Math.round(v / 1000) + 'k' : v >= 1000 ? (v / 1000).toFixed(1).replace('.', ',') + 'k' : String(Math.round(v));
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" aria-label="Einzahlungen pro Monat">
+    <defs><linearGradient id="fb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity=".55"/></linearGradient>
+    <linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".32"/><stop offset="1" stop-color="#fff" stop-opacity=".04"/></linearGradient></defs>
+    ${vals.map((v, i) => { const h = Math.max(v, 0) / max * (H - T - B), cx = slot * i + slot / 2, last = i === n - 1;
+      return `<rect class="bar" style="animation-delay:${i * 70}ms" x="${(cx - bw / 2).toFixed(1)}" y="${(H - B - Math.max(h, 3)).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(h, 3).toFixed(1)}" rx="8"
+        fill="${last ? 'url(#fb)' : v > 0 ? 'url(#fg)' : 'rgba(255,255,255,.07)'}"/>
+        ${v > 0 && n <= 12 ? `<text x="${cx.toFixed(1)}" y="${(H - B - h - 7).toFixed(1)}" text-anchor="middle" style="fill:${last ? '#fff' : ''}">${short(v)}</text>` : ''}
+        ${n <= 12 || (n - 1 - i) % 3 === 0 ? `<text x="${cx.toFixed(1)}" y="${H - 6}" text-anchor="middle" style="${last ? 'fill:#fff' : ''}">${monthName(keys[i])}</text>` : ''}`; }).join('')}</svg>`;
+}
+// Zahlen hochzählen lassen (vom zuletzt gezeigten Wert aus)
+S.shown = {};
+// Einzahlen-Symbol: Lucide-Sparschwein mit Plus auf dem Bauch, Linien mit wanderndem Hologramm-Verlauf
+const PIGGY_PLUS = `<svg class="i" viewBox="0 0 24 24" fill="none" stroke="url(#holoG)" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <defs><linearGradient id="holoG" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#ff9ad5"/><stop offset=".25" stop-color="#b392ff"/><stop offset=".5" stop-color="#5fe4ff"/><stop offset=".75" stop-color="#7dffb5"/><stop offset="1" stop-color="#fff07a"/>
+    <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="360 .5 .5" dur="4s" repeatCount="indefinite"/></linearGradient></defs>
+  <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/>
+  <path d="M2 9v1c0 1.1.9 2 2 2h1"/><path d="M16.5 10.5h.01"/><path d="M11 10v5M8.5 12.5h5"/></svg>`;
+
+// Nach dem Hochzählen: dezente Partikel fliegen hinter der Karte nach außen, die Karte leuchtet kurz heller auf
+function cardBurst(card, delta) {
+  if (!card.isConnected) return;
+  const wrap = card.parentElement;
+  // „+Betrag“ taucht oben auf der Karte auf, steigt nach oben und läuft dabei transparent aus
+  if (delta > 0) { const p = document.createElement('div'); p.className = 'fc-plus'; p.textContent = '+' + eur(delta); wrap.appendChild(p); setTimeout(() => p.remove(), 2200); }
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const b = document.createElement('div'); b.className = 'fc-burst';
+  const cols = ['#ffd27a', '#ffb347', '#ff8a3d', '#fff2c4', '#ff6a2e'];
+  let html = '';
+  for (let i = 0; i < 26; i++) {
+    // Start auf dem Kartenrand, Flugrichtung nach außen
+    const side = i % 4, u = Math.random();
+    const x = side === 0 ? u * 100 : side === 1 ? 100 : side === 2 ? u * 100 : 0, y = side === 0 ? 0 : side === 1 ? u * 100 : side === 2 ? 100 : u * 100;
+    const ang = Math.atan2(y - 50, (x - 50) * 1.586) + (Math.random() - .5) * .9, dist = 26 + Math.random() * 46;
+    html += `<i style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;--dx:${(Math.cos(ang) * dist).toFixed(1)}px;--dy:${(Math.sin(ang) * dist).toFixed(1)}px;--s:${(2 + Math.random() * 2.6).toFixed(1)}px;--c:${cols[i % cols.length]};animation-delay:${(Math.random() * .35).toFixed(2)}s;animation-duration:${(1.5 + Math.random() * 1.1).toFixed(2)}s"></i>`;
+  }
+  b.innerHTML = html; wrap.insertBefore(b, wrap.firstChild);
+  const f = document.createElement('span'); f.className = 'fc-flash'; card.appendChild(f);
+  setTimeout(() => { b.remove(); f.remove(); }, 3000);
+}
+function countUp() {
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for (const el of app.querySelectorAll('[data-count]')) {
+    const to = +el.dataset.count, k = el.dataset.key, known = k in S.shown, from = S.shown[k] ?? 0; S.shown[k] = to;
+    const show = v => { if (el.dataset.split) el.innerHTML = eurSplit(v); else el.textContent = eur(v); if (el.dataset.gold) el.dataset.g = eur(v, 2); };
+    if (still || from === to) { show(to); continue; }
+    // Karte: langsamer hochzählen, währenddessen in metallischem Gold-Verlauf (danach weich zurück zu Weiß)
+    const t0 = performance.now(), dur = +el.dataset.dur || 1200;
+    const card = el.closest('.fcard');
+    if (el.dataset.gold) { clearTimeout(el._goldT); show(from); el.classList.add('gold'); if (card) card._boost = true; }
+    const step = now => { const q = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - q, 3);
+      show(q < 1 ? Math.round(from + (to - from) * e) : to);
+      if (q < 1 && el.isConnected) requestAnimationFrame(step);
+      else if (el.dataset.gold) {
+        // „+Betrag“ und Partikel nur nach einer echten Einzahlung, nicht beim Öffnen der App
+        if (card) { card._boost = false; if (known && to > from) cardBurst(card, to - from); }
+        el._goldT = setTimeout(() => el.classList.remove('gold'), 900);
+      } };
+    requestAnimationFrame(step);
+  }
+}
+// Belohnungen: Konfetti, großes „+50 €“, Meilensteine, Erfolge
+function confetti(power = 1) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c = document.createElement('canvas'), dpr = Math.min(devicePixelRatio || 1, 2), W = innerWidth, H = innerHeight;
+  c.className = 'confetti'; c.width = W * dpr; c.height = H * dpr; document.body.appendChild(c);
+  const g = c.getContext('2d'); g.scale(dpr, dpr);
+  const cols = ['#8b5cff', '#d9468f', '#ffc069', '#4be39b', '#6ea8ff', '#ffffff', '#f08bd0'], P = [];
+  for (let i = 0; i < Math.round(160 * power); i++) {
+    const side = i % 3, fromMid = side === 2;
+    P.push({x: fromMid ? W / 2 : side ? W + 10 : -10, y: fromMid ? H * .42 : H * .75,
+      vx: fromMid ? (Math.random() - .5) * 16 : (side ? -1 : 1) * (4 + Math.random() * 10), vy: fromMid ? -(4 + Math.random() * 10) : -(10 + Math.random() * 13),
+      w: 6 + Math.random() * 6, h: 9 + Math.random() * 8, r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: cols[i % cols.length], round: Math.random() < .3});
+  }
+  const t0 = performance.now(), life = 2800;
+  const f = now => {
+    const t = now - t0; g.clearRect(0, 0, W, H); g.globalAlpha = Math.max(0, 1 - Math.max(0, t - life * .6) / (life * .4));
+    for (const p of P) {
+      p.vy += .32; p.vx *= .985; p.vy *= .985; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.fillStyle = p.c;
+      if (p.round) { g.beginPath(); g.arc(0, 0, p.w / 2.4, 0, 7); g.fill(); } else g.fillRect(-p.w / 2, -p.h / 2 * Math.abs(Math.cos(p.r)), p.w, p.h * Math.abs(Math.cos(p.r)) + 1);
+      g.restore();
+    }
+    if (t < life) requestAnimationFrame(f); else c.remove();
+  };
+  requestAnimationFrame(f);
+}
+function cheer(amount) {
+  document.querySelectorAll('.cheer').forEach(x => x.remove());
+  const el = document.createElement('div'); el.className = 'cheer';
+  el.innerHTML = `<b>+${eur(amount)}</b><span>${CHEERS[Math.floor(Math.random() * CHEERS.length)]}</span>`;
+  document.body.appendChild(el); setTimeout(() => el.remove(), 2300);
+}
+function overlay(icon, title, text, burst, onClose) {
+  const m = document.createElement('div'); m.className = 'ms-bg';
+  m.innerHTML = `<div class="ms"><div class="mi">${lucide(icon)}</div><h2>${esc(title)}</h2><p>${esc(text)}</p>
+    <div class="cta" style="margin-top:0"><button class="go">Weiter</button></div></div>`;
+  m.addEventListener('click', () => { m.remove(); onClose?.(); });
+  document.body.appendChild(m); confetti(burst);
+  if (burst > 1.5) setTimeout(() => confetti(1.2), 700);
+}
+function reward(r) {
+  if (!r) return;
+  const showBadges = delay => r.badges.forEach((b, i) => setTimeout(() => toast(`Erfolg freigeschaltet: ${b[1]}`), delay + i * 2700));
+  if (r.t.amount > 0) {
+    const ms = r.g ? [25, 50, 75, 100].filter(m => r.before < m && r.after >= m).pop() : 0;
+    if (ms) {
+      const T = {25: 'Ein Viertel geschafft!', 50: 'Halbzeit!', 75: 'Fast am Ziel!', 100: 'Ziel erreicht!'};
+      overlay(ms === 100 ? 'trophy' : 'party-popper', T[ms], ms === 100 ? `Du hast ${eur(r.g.target)} für „${r.g.name}“ zusammen. Gönn dir was!` : `${ms} % von „${r.g.name}“ sind gespart. Noch ${eur(Math.max(r.g.target - goalSaved(r.g), 0))}.`,
+        ms === 100 ? 2.2 : 1.4, () => showBadges(200));
+      return;
+    }
+    confetti(); cheer(r.t.amount); showBadges(2400);
+  } else showBadges(0);
+}
+
+// Kachel auf der Startseite
+function finTile() {
+  const total = finTotal(), m = monthSum(monthKey()), n = S.fin.goals.length;
+  const label = Math.abs(total) >= 100000 ? Math.round(total / 1000) + 'k €' : Math.round(total).toLocaleString('de-DE') + ' €';
+  const due = pendingRates().length;
+  return `<button class="mini fin" data-act="navFinance"><span class="k">FINANZEN</span>${lucide('piggy-bank', 'i mi')}
+    <span class="n${label.length > 5 ? ' sm' : ''}">${label}</span>
+    <span class="s">${due ? `${due} Sparrate${due === 1 ? '' : 'n'} fällig` : m > 0 ? `+${eur(m)} diesen Monat` : n ? `${n} Sparziel${n === 1 ? '' : 'e'}` : 'Sparziel setzen'}</span></button>`;
+}
+function goalCard(g) {
+  const saved = goalSaved(g), pct = goalPct(g), won = g.target > 0 && saved >= g.target;
+  const sub = won ? 'Ziel erreicht' : g.plan?.amount > 0 ? `${eur(g.plan.amount)} / Monat${etaText(g) ? ' · ' + etaText(g) : ''}` : g.due ? `bis ${fmtDate(g.due)}` : 'ohne Sparplan';
+  // Glas-Kachel: Icon-Knopf oben links, leuchtender Fortschrittsring oben rechts, Titel groß, runder Einzahlen-Knopf unten rechts
+  const c = won ? '#ffc069' : g.color;
+  return `<div class="gtile${won ? ' won' : ''}" role="button" tabindex="0" data-act="openGoal" data-id="${g.id}" style="--gc:${c}">
+    <span class="gt-glow"></span>
+    <span class="gt-ring">${ring(pct, 150, c, 7)}</span>
+    <span class="gt-ico">${lucide(won ? 'trophy' : g.icon || 'piggy-bank')}</span>
+    <div class="gt-body">
+      <div class="gt-meta">${lucide(won ? 'party-popper' : 'target', 'i sm')} ${won ? 'Ziel erreicht' : Math.floor(pct) + ' %'}</div>
+      <div class="gt-t">${esc(g.name)}</div>
+      <div class="gt-s">${eur(saved)} <span>von ${eur(g.target)}</span></div>
+      <div class="gt-sub">${esc(sub)}</div>
+    </div>
+    <button class="gt-go" data-act="newTx" data-id="${g.id}" aria-label="In ${esc(g.name)} einzahlen">${ICON.plus}</button>
+  </div>`;
+}
+function etaText(g) {
+  const rest = g.target - goalSaved(g), a = g.plan?.amount;
+  if (!(a > 0) || rest <= 0) return '';
+  return 'fertig ' + monthName(addMonths(monthKey(), Math.ceil(rest / a)), true);
+}
+function rateRow({g, key}) {
+  return `<div class="rate">${folderIcon(g, 40)}<div class="rc"><div class="t">${eur(g.plan.amount)} für ${esc(g.name)}</div>
+    <div class="s">Sparrate ${monthName(key, true)}</div><button class="skipl" data-act="skipRate" data-id="${g.id}" data-k="${key}">überspringen</button></div>
+    <button class="go-btn" data-act="payRate" data-id="${g.id}" data-k="${key}">Eingezahlt</button></div>`;
+}
+function txTable(list, showGoal) {
+  if (!list.length) return '';
+  return `<div class="tbl-wrap"><table class="ftable"><thead><tr><th>Datum</th>${showGoal ? '<th>Ziel</th>' : '<th>Notiz</th>'}<th class="r">Betrag</th></tr></thead><tbody>
+    ${list.map(t => { const g = goalById(t.goalId);
+      return `<tr data-act="txMenu" data-id="${t.id}"><td class="dim">${fmtDate(t.date).slice(0, 6)}${t.date?.slice(2, 4) || ''}</td>
+        <td>${showGoal ? esc(g ? g.name : 'Allgemein') : esc(t.skipped ? 'übersprungen' : t.note || (t.plan ? 'Sparrate' + (t.auto ? ' (auto)' : '') : '–'))}</td>
+        <td class="r ${t.amount > 0 ? 'pos' : t.amount < 0 ? 'neg' : 'dim'}">${t.amount > 0 ? '+' : ''}${eur(t.amount)}</td></tr>`; }).join('')}</tbody></table></div>`;
+}
+
+views.finance = () => {
+  const total = finTotal(), now = monthKey(), m = monthSum(now), streak = finStreak();
+  const keys12 = Array.from({length: 12}, (_, i) => addMonths(now, i - 11));
+  const before = S.fin.tx.reduce((s, t) => (t.date || '') < keys12[0] ? s + t.amount : s, 0);
+  let run = before; const cum = keys12.map(k => (run += monthSum(k)));
+  const keys6 = keys12.slice(6), bars = keys6.map(monthSum);
+  const pend = pendingRates(), goals = [...S.fin.goals].sort((a, b) => (goalPct(a) >= 100) - (goalPct(b) >= 100) || goalPct(b) - goalPct(a));
+  const months = keys12.map((k, i) => ({k, in: monthSum(k), sum: cum[i]})).filter(r => r.in !== 0 || r.k === now).reverse();
+  const recent = [...S.fin.tx].sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.created - a.created).slice(0, 8);
+  const has = S.fin.tx.length > 0;
+  setView(`<div class="fin-aura"></div>
+  <header class="hero fin-head">
+    <div class="fin-brand">${lucide('piggy-bank')}<span>PiggySpare</span></div>
+    <button class="fin-welcome" data-act="openProfile" aria-label="Profil">Welcome${S.profile?.name ? `, <b>${esc(S.profile.name)}</b>` : ''}
+      <span class="fin-av">${S.profile?.photo ? `<img src="${S.profile.photo}" alt="">` : lucide('user')}</span></button>
+    <button class="fin-gear" data-act="navSettings" aria-label="Einstellungen">${ICON.gear}</button>
+  </header>
+  <div class="wrap fin${finAnim()}">
+    <div class="fc-wrap"><div class="fcard" id="fcard"><span class="fc-shine">${Array.from({length: 14}, () => `<i style="left:${(15 + Math.random() * 70).toFixed(1)}%;top:${(15 + Math.random() * 70).toFixed(1)}%;--s:${(1 + Math.random() * 2.2).toFixed(1)}px;animation-delay:${(Math.random() * 3.2).toFixed(2)}s;animation-duration:${(2.4 + Math.random() * 2).toFixed(2)}s"></i>`).join('')}</span><span class="fc-idholo"></span><span class="fc-bigpig" style="--pig:${PIG_HOLO}"></span><span class="fc-chrome"></span><span class="fc-glare"></span>
+      <div class="fc-top"><span>Gespart insgesamt</span>${lucide('piggy-bank', 'i fc-logo')}</div>
+      <div class="fc-amt" data-count="${total}" data-key="total" data-split="1" data-dur="2000" data-gold="1" data-g="${eur(total, 2)}">${eurSplit(total)}</div>
+      <div class="fc-row"><div class="fc-chip"><i></i><i></i><i></i><b class="fc-chip-holo"></b></div></div>
+      <div class="fc-back" aria-hidden="true"><i class="fc-stripe"></i>
+        <div class="fc-sig"><span>${esc(S.profile?.name || 'Sparer')}</span><b>${String(S.fin.tx.length).padStart(3, '0')}</b></div>
+        <div class="fc-bk-txt">PiggySpare · Jeder Euro zählt.<br>Gespart seit ${(() => { const f = S.fin.tx.map(t => t.date).filter(Boolean).sort()[0]; return f ? monthName(f.slice(0, 7), true) : monthName(monthKey(), true); })()}</div>
+        ${lucide('piggy-bank', 'i fc-bk-logo')}</div>
+      <div class="fc-bot">
+        <div><small>Sparer</small><b>${esc((S.profile?.name || 'Meine Ersparnisse').toUpperCase())}</b></div>
+        <div class="fc-r"><small>${monthName(now, true)}</small><span>${m >= 0 ? '+' : ''}${eur(m)}${streak ? ` &nbsp;${lucide('flame', 'i sm')} ${streak}` : ''}</span></div>
+      </div>
+    </div></div>
+    <div class="fc-acts">
+      <button data-act="newTx" class="fc-holo-act"><span>${PIGGY_PLUS}</span><em>Einzahlen</em></button>
+      <button data-act="newTx" data-kind="out"><span>${lucide('arrow-down')}</span>Entnahme</button>
+      <button data-act="pickTransfer"><span>${lucide('arrow-up-right')}</span>Überweisen</button>
+      <button data-act="openSparkasse"><span>${lucide('external-link')}</span>Sparkasse</button>
+    </div>
+    ${pend.length ? `<div class="section-h" id="rates"><span>Fällige Sparraten</span></div><div class="list">${pend.map(rateRow).join('')}</div>` : ''}
+
+    <div class="section-h"><span>Sparziele</span>${S.fin.goals.length ? `<button class="add-btn" data-go="goalEdit">${ICON.plus}Neu</button>` : ''}</div>
+    ${goals.length ? `<div class="gtiles">${goals.map(goalCard).join('')}</div>`
+      : `<div class="empty">${emptyIcon('piggy-bank')}Wofür möchtest du sparen?<br>Urlaub, neues Handy, Notgroschen …
+         <div class="btns"><button class="btn primary" data-go="goalEdit">${lucide('target')} Erstes Sparziel setzen</button></div></div>`}
+
+    ${has ? `
+    ${verlaufHtml()}
+
+    <div class="section-h"><span>Monatsübersicht</span></div>
+    <div class="tbl-wrap"><table class="ftable"><thead><tr><th>Monat</th><th class="r">Eingezahlt</th><th class="r">Stand</th></tr></thead><tbody>
+      ${months.map(r => `<tr><td>${monthName(r.k, true)}</td><td class="r ${r.in > 0 ? 'pos' : r.in < 0 ? 'neg' : 'dim'}">${r.in > 0 ? '+' : ''}${eur(r.in)}</td><td class="r">${eur(r.sum)}</td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="section-h"><span>Letzte Buchungen</span></div>
+    ${txTable(recent, true)}` : ''}
+
+    <div class="section-h"><span>Erfolge</span><span class="link">${S.fin.badges.length} / ${BADGES.length}</span></div>
+    <div class="badges">${BADGES.map(b => `<div class="bdg${S.fin.badges.includes(b[0]) ? ' on' : ''}"><span class="bi">${lucide(b[2])}</span>${b[1]}</div>`).join('')}</div>
+  </div>
+  ${bottomNav('finance')}`);
+  countUp();
+  cardMotion($('#fcard'));
+  vlScrub();
+};
+
+// Hologramm-Motiv „reiches Sparschwein“: filigrane Strichzeichnung (Zylinder, Monokel mit $, Fliege, Zigarre, Münzstapel, Strahlenkranz).
+// Wird als Maske genutzt: weiße Linien = sichtbare Hologramm-Farbe.
+const PIG_HOLO = (() => {
+  const rays = [];
+  for (let a = 0; a < 360; a += 4) { const t = a * Math.PI / 180, r1 = a % 8 ? 70 : 64;
+    rays.push(`<line x1="${(100 + r1 * Math.cos(t)).toFixed(1)}" y1="${(104 + r1 * Math.sin(t)).toFixed(1)}" x2="${(100 + 97 * Math.cos(t)).toFixed(1)}" y2="${(104 + 97 * Math.sin(t)).toFixed(1)}"/>`); }
+  const hatch = (x0, x1, y0, y1, step) => { let o = ''; for (let x = x0; x <= x1; x += step) o += `<line x1="${x}" y1="${y0}" x2="${x}" y2="${y1}"/>`; return o; };
+  const stack = (cx, n, base) => { let o = `<path d="M${cx - 15} ${base} V${base - (n - 1) * 5} M${cx + 15} ${base} V${base - (n - 1) * 5}"/>`;
+    for (let i = 0; i < n; i++) o += `<ellipse cx="${cx}" cy="${base - i * 5}" rx="15" ry="3.6"/>`; return o + `<ellipse cx="${cx}" cy="${base - (n - 1) * 5}" rx="8" ry="1.8" stroke-width=".6"/>`; };
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke-width=".7" opacity=".45">${rays.join('')}</g>
+    <g stroke-width="1.5">
+      <path d="M58 110C58 86 79 79 100 79C121 79 142 86 142 110C142 140 122 156 100 156C78 156 58 140 58 110Z"/>
+      <path d="M66 92C58 80 52 66 52 57C62 61 74 70 82 80"/><path d="M134 92C142 80 148 66 148 57C138 61 126 70 118 80"/>
+      <path d="M76 75L79 31Q100 27 121 31L124 75"/><ellipse cx="100" cy="31" rx="21" ry="4"/><ellipse cx="100" cy="76" rx="43" ry="7"/>
+      <path d="M77 62H123M77 69H123"/><path d="M100 61.5L103 65.5L100 69.5L97 65.5Z"/>
+      <circle cx="120" cy="104" r="11"/>
+      <ellipse cx="100" cy="124" rx="18" ry="12"/>
+      <path d="M80 138Q100 155 120 138"/>
+      <path d="M118 140L150 128L152 133L120 145Z"/>
+      <path d="M100 167L82 158V176Z"/><path d="M100 167L118 158V176Z"/><rect x="96" y="163" width="8" height="8" rx="1.5"/>
+      <path d="M84 156L100 167L116 156"/>
+      ${stack(36, 6, 190)}${stack(164, 5, 190)}${stack(58, 3, 196)}
+    </g>
+    <g stroke-width=".8">
+      <path d="M64 84C60 76 58 70 58 65C64 68 70 73 74 78"/><path d="M136 84C140 76 142 70 142 65C136 68 130 73 126 78"/>
+      ${hatch(83, 117, 35, 59, 3.4)}
+      <path d="M72 96Q80 91 88 96M112 93Q120 88 128 93"/>
+      <path d="M74 104Q81 110 88 104M76 106L74 109M81 108V111M86 106L88 109"/>
+      <circle cx="120" cy="104" r="8.6" stroke-width=".6"/>
+      <path d="M123.5 99.5C121 98 116.5 98.5 116.5 101.5C116.5 105 123.5 103 123.5 106.8C123.5 110 118.5 110.5 116 108.6M120 96.5V111.5"/>
+      <path d="M131 106C140 122 135 142 146 170" stroke-dasharray="1.6 1.8"/><circle cx="146.5" cy="172.5" r="2.4"/>
+      <ellipse cx="93.5" cy="124" rx="3" ry="5"/><ellipse cx="106.5" cy="124" rx="3" ry="5"/>
+      <path d="M63 116L70 114M62 122L70 120M62 128L70 126M63 134L70 132M137 116L130 114M138 122L130 120M138 128L130 126M137 134L130 132"/>
+      <path d="M90 143L92 147.5L94.5 144.2M105.5 144.2L108 147.5L110 143"/>
+      <path d="M127 137.5L129 142.5M131 136L133 141"/><path d="M153 126C160 118 151 112 158 104C164 97 156 91 163 84"/>
+      <path d="M88 158L92 166L88 174M112 158L108 166L112 174"/>
+      <ellipse cx="78" cy="193" rx="9" ry="2.6"/><ellipse cx="124" cy="194" rx="10" ry="2.8"/><ellipse cx="142" cy="196" rx="7" ry="2"/>
+    </g></svg>`;
+  return `url('data:image/svg+xml,${encodeURIComponent(svg.replace(/\s+/g, ' '))}')`;
+})();
+
+// Karte in 3D: sanftes Wackeln im Ruhezustand, mit dem Finger in alle Richtungen kippbar (weicher Anschlag, Rückseite bleibt unsichtbar),
+// beim schnellen Bewegen leichte Bewegungsunschärfe, Antippen stupst sie an der Stelle nach innen. Danach federt sie zurück.
+// Im Ruhezustand nur kleine Winkel und keine Unschärfe – der Text bleibt jederzeit gut lesbar.
+function cardMotion(card) {
+  if (!card) return;
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches, MY = 32, MX = 26;
+  const soft = (v, m) => Math.sign(v) * m * Math.tanh(Math.abs(v) / m); // weicher Anschlag statt harter Grenze
+  let ry = 0, rx = 0, vy = 0, vx = 0, pz = 0, vz = 0, tapT = 0, drag = null, lastT = performance.now(), t0 = lastT;
+  let taps = 0, lastTap = 0, spin = null, spinPrev = 0, boostV = 0, ph = 0;
+  const SPIN_MS = 1100, ease = u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+  const wrap = card.parentElement;
+  wrap.addEventListener('pointerdown', e => {
+    drag = {x: e.clientX, y: e.clientY, bx: rx, by: ry, lastT: performance.now(), on: false, id: e.pointerId};
+    vz -= 1.4; // sofort leicht eindrücken – fühlt sich direkt an
+    try { wrap.setPointerCapture(e.pointerId); } catch {}
+  });
+  wrap.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.on) { if (Math.hypot(dx, dy) < 6) return; drag.on = true; }
+    const now = performance.now(), dtm = Math.max(now - drag.lastT, 8) / 16;
+    const ny = soft(drag.by + dx * .3, MY), nx = soft(drag.bx - dy * .3, MX);
+    vy = (ny - ry) / dtm; vx = (nx - rx) / dtm; ry = ny; rx = nx; drag.lastT = now;
+  });
+  const end = e => {
+    if (!drag || (e && e.pointerId !== drag.id)) return;
+    if (!drag.on && e && e.type === 'pointerup') { // Antippen: an der getippten Stelle nach innen stupsen
+      const r = card.getBoundingClientRect(), nx = clamp((e.clientX - r.left) / r.width * 2 - 1, -1, 1), ny = clamp((e.clientY - r.top) / r.height * 2 - 1, -1, 1);
+      vy += nx * 9; vx -= ny * 8; vz -= 7.5; tapT = 70; // kräftig nach hinten neigen, die getippte Seite geht am weitesten zurück
+      // 4× schnell hintereinander antippen: Karte dreht sich einmal um 360°
+      const tn = performance.now(); taps = tn - lastTap < 420 ? taps + 1 : 1; lastTap = tn;
+      // seitlich angetippt: Drehung um die senkrechte Achse; oben/unten angetippt: Überschlag nach hinten (oben) bzw. nach vorn (unten)
+      if (taps >= 4 && !spin) { const vert = Math.abs(ny) > Math.abs(nx) * .63; spin = {t0: tn, axis: vert ? 'x' : 'y', dir: vert ? (ny < 0 ? 1 : -1) : (nx < 0 ? -1 : 1)}; taps = 0; vz -= 4; }
+    }
+    drag = null;
+  };
+  wrap.addEventListener('pointerup', end); wrap.addEventListener('pointercancel', end);
+  const frame = now => {
+    if (!card.isConnected) return;
+    // Federn zeitbasiert in kleinen Teilschritten: gleich schnell bei 60 und 120 Hz und stabil, auch wenn ein Bild ausfällt
+    const e = Math.min((now - lastT) / 16.7, 30), n = Math.max(1, Math.ceil(e)), h = e / n; lastT = now;
+    const dragging = !!drag?.on;
+    for (let i = 0; i < n; i++) {
+      if (!dragging) { const k = tapT > 0 ? .035 : .06, c = tapT > 0 ? .14 : .21; tapT -= h; // nach dem Stupser weicher und länger nachschwingen
+        vy += (-ry * k - vy * c) * h; ry = clamp(ry + vy * h, -MY, MY); vx += (-rx * k - vx * c) * h; rx = clamp(rx + vx * h, -MX, MX); }
+      else { const f = Math.pow(.85, h); vy *= f; vx *= f; }
+      vz += (-pz * .04 - vz * .14) * h; pz += vz * h;
+    }
+    // Während der Betrag hochzählt (card._boost = 1): Karte nach oben geneigt, damit die Hologramme sichtbar werden, und schnelleres Wackeln
+    boostV += ((card._boost ? 1 : 0) - boostV) * Math.min(1, .06 * e);
+    ph += (now - (frame.last || now)) / 1000 * (1 + boostV * 1.8); frame.last = now;
+    const t = ph, idle = still || dragging ? 0 : 1, amp = 1 + boostV * .7;
+    const wy = Math.sin(t * 1.1) * 3.2 * idle * amp, wx = Math.cos(t * .8) * 2.2 * idle * amp, wz = Math.sin(t * .9 + 1) * .5 * idle;
+    const X = rx + wx + boostV * 12 * (still ? 0 : 1), Y = ry + wy;
+    // 360°-Drehung: Winkel kommt zur Neigung dazu; zwischen 90° und 270° ist die Rückseite zu sehen
+    let S360 = 0, spinScale = 1, axis = 'y';
+    if (spin) {
+      const u = Math.min((now - spin.t0) / SPIN_MS, 1); axis = spin.axis; S360 = ease(u) * 360 * spin.dir;
+      // während der Drehung kleiner werden, danach wieder groß (mit kurzem Nachfedern über 100 %)
+      spinScale = 1 - .22 * Math.sin(Math.PI * Math.min(u / .75, 1)) + .06 * Math.sin(Math.PI * clamp((u - .7) / .3, 0, 1));
+      if (u >= 1) { spin = null; S360 = 0; spinScale = 1; }
+    }
+    const spinV = Math.abs(S360 - spinPrev) / Math.max(e, .5); spinPrev = S360;
+    const SX = axis === 'x' ? S360 : 0, SY = axis === 'y' ? S360 : 0;
+    const ay = ((Y + SY) % 360 + 360) % 360, ax = ((X + SX) % 360 + 360) % 360;
+    const backY = ay > 90 && ay < 270, backX = ax > 90 && ax < 270;
+    card.classList.toggle('back', backY !== backX); card.classList.toggle('bx', backX && !backY);
+    const speed = Math.hypot(vx, vy) + spinV * .35;
+    const blur = speed > 1.2 ? Math.min((speed - 1.2) * .14, 1.6) : 0;
+    const sc = (1 + clamp(pz, -26, 10) * .003) * spinScale;
+    card.style.transform = `translateZ(${(pz * 3).toFixed(1)}px) rotateX(${(X + SX).toFixed(2)}deg) rotateY(${(Y + SY).toFixed(2)}deg) rotateZ(${wz.toFixed(2)}deg) scale(${sc.toFixed(4)})`;
+    card.style.filter = blur > .1 ? `blur(${blur.toFixed(2)}px)` : '';
+    // Leuchten im Hintergrund: unten gedämpft, rundum am Kartenrand bleibt ein Glühen
+    card.style.boxShadow = `${(-Y * .4).toFixed(1)}px ${(14 + X * .4 + pz * .5).toFixed(1)}px 36px -20px rgba(255,70,20,.3),0 0 18px -6px rgba(255,90,30,.45),inset 0 1px 0 rgba(255,255,255,.12)`;
+    card.style.setProperty('--gx', `${(Y * 1.6).toFixed(1)}%`); card.style.setProperty('--gy', `${(-X * 2).toFixed(1)}%`);
+    const tilt = Math.min(Math.hypot(X / MX, Y / MY), 1);
+    card.style.setProperty('--go', (.18 + tilt * .22).toFixed(2));
+    // Chrom-Effekt: metallischer Glanz wandert mit der Neigung, wird stärker, je weiter die Karte gekippt ist (liegt hinter dem Text)
+    card.style.setProperty('--co', Math.min(.42, .02 + tilt * .8).toFixed(3)); // blasse Chrom-Streifen, Karte bleibt kräftig
+    // Ausweis-Hologramm: unsichtbar, solange die Karte fast gerade liegt, wird beim Neigen sichtbar
+    card.style.setProperty('--ho', clamp((tilt - .1) * 2.4, 0, .9).toFixed(3));
+    card.style.setProperty('--ha', `${(160 + Y * 2.5 - X * 2).toFixed(0)}deg`);
+    // Hologramm (Farbverschiebung) und Lichtkreis folgen der Neigung
+    card.style.setProperty('--hx', `${(50 + Y * 1.5).toFixed(1)}%`); card.style.setProperty('--hy', `${(50 - X * 1.5).toFixed(1)}%`);
+    card.style.setProperty('--hue', ((20 + Y * 9 + X * 6) % 360 + 360) % 360 | 0);
+    card.style.setProperty('--sx', `${(58 - Y * 1.3).toFixed(1)}%`); card.style.setProperty('--sy', `${(38 + X * 1.4).toFixed(1)}%`);
+    // Streifen bleibt bei jeder Neigung auf der Karte (Bereich ca. 8–68 % der Verlaufsfläche)
+    card.style.setProperty('--cx', `${(38 - Y * .95).toFixed(1)}%`); card.style.setProperty('--cy', `${(50 + X * 1.2).toFixed(1)}%`);
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+views.goal = ({id}) => {
+  const g = goalById(id); if (!g) return back();
+  const saved = goalSaved(g), pct = goalPct(g), rest = Math.max(g.target - saved, 0), won = g.target > 0 && saved >= g.target;
+  const list = S.fin.tx.filter(t => t.goalId === id).sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.created - a.created);
+  const monthsLeft = g.due ? Math.max(1, (new Date(g.due).getFullYear() - new Date().getFullYear()) * 12 + new Date(g.due).getMonth() - new Date().getMonth()) : 0;
+  const need = g.due && rest > 0 ? rest / monthsLeft : 0;
+  setView(`<div class="fin-aura"></div>
+  <header class="top fin-top"><button class="btn-text" data-act="back">${ICON.back}Übersicht</button><h1></h1>
+    <button class="btn-text right" data-go="goalEdit" data-id="${id}">Bearbeiten</button></header>
+  <h1 class="big-title title-ico">${folderIcon(g, 46)}<span>${esc(g.name)}</span></h1>
+  <div class="wrap fin${finAnim()}" style="--gc:${won ? '#ffc069' : g.color};--gct:${won ? '#ffc069' : g.color}40">
+    <div class="gbig">${ring(pct, 200, won ? '#ffc069' : g.color, 14)}
+      <div class="in"><b data-count="${saved}" data-key="g${id}">${eur(saved)}</b><small>${won ? 'Ziel erreicht!' : `${Math.floor(pct)} % von ${eur(g.target)}`}</small></div></div>
+    <div class="bk-stats">
+      <div class="bk-stat"><span class="n" style="font-size:22px">${eur(rest, 0)}</span><span class="l">fehlen noch</span></div>
+      <div class="bk-stat"><span class="n" style="font-size:22px">${g.plan?.amount > 0 ? eur(g.plan.amount) : '–'}</span><span class="l">pro Monat</span></div>
+      <div class="bk-stat"><span class="n" style="font-size:22px">${g.due ? fmtDate(g.due).slice(3) : '–'}</span><span class="l">Zieldatum</span></div>
+    </div>
+    ${!won && (etaText(g) || need) ? `<p class="hint">${etaText(g) ? `Mit deinem Sparplan bist du voraussichtlich ${etaText(g).replace('fertig ', 'im ')} fertig.` : ''}${need ? ` Für dein Zieldatum brauchst du ${eur(need)} pro Monat.` : ''}</p>` : ''}
+    <div class="btns two">
+      <button class="btn primary" data-act="newTx" data-id="${id}">${ICON.plus} Einzahlen</button>
+      <button class="btn" data-act="openTransfer" data-id="${id}">${lucide('arrow-left-right')} Überweisen</button>
+    </div>
+    <div class="btns"><button class="btn bank" data-act="openSparkasse" data-id="${id}">${lucide('external-link')} Sparkasse öffnen</button></div>
+    ${g.plan?.amount > 0 ? `<div class="info" style="margin-top:14px">${lucide('repeat')}<div><b>Sparplan: ${eur(g.plan.amount)} am ${g.plan.day || 1}. jedes Monats</b><br>
+      ${g.plan.auto ? 'Wird automatisch verbucht (Dauerauftrag in deiner Banking-App).' : 'Die App erinnert dich, und du bestätigst die Einzahlung mit einem Tipp.'}</div></div>` : ''}
+    <div class="section-h"><span>Einzahlungen</span><span class="link">${list.length}</span></div>
+    ${list.length ? txTable(list, false) + '<p class="hint">Tippe auf eine Buchung, um sie zu löschen.</p>' : `<div class="empty">${emptyIcon('coins')}Noch nichts eingezahlt.<br>Der erste Euro ist der wichtigste!</div>`}
+  </div>
+  ${bottomNav('finance')}`);
+  countUp();
+};
+
+views.goalEdit = ({id}) => {
+  const g = id ? goalById(id) : {name: '', icon: 'piggy-bank', color: COLORS[S.fin.goals.length % COLORS.length], target: 0, due: '', plan: {amount: 0, day: 1, auto: false}, bank: {}};
+  if (!g) return back();
+  const st = {icon: g.icon, color: g.color}, p = g.plan || {}, bk = g.bank || {};
+  setView(`
+  <header class="top"><button class="btn-text" data-act="back">Abbrechen</button><h1>${id ? 'Ziel bearbeiten' : 'Neues Sparziel'}</h1>
+    <button class="btn-text right strong" data-act="saveGoal" data-id="${id || ''}">Speichern</button></header>
+  <div class="wrap fin"><div class="fin-aura"></div><form id="gForm" autocomplete="off" onsubmit="return false">
+    <div style="display:grid;place-items:center;margin-top:10px"><div id="gPrev">${folderIcon(st, 80)}</div></div>
+    <div class="fgroup">
+      <label class="field"><span>Wofür?</span><input name="name" value="${esc(g.name)}" placeholder="z. B. Urlaub"></label>
+      <label class="field"><span>Zielbetrag</span><input name="target" inputmode="decimal" value="${amtStr(g.target)}" placeholder="0 €"></label>
+      <label class="field"><span>Bis wann?</span><input type="date" name="due" value="${esc(g.due || '')}"></label>
+    </div>
+    <p class="hint" id="gNeed"></p>
+    <div class="section-h"><span>Sparplan</span></div>
+    <div class="fgroup">
+      <label class="field"><span>Monatlich</span><input name="pAmount" inputmode="decimal" value="${amtStr(p.amount)}" placeholder="0 €"></label>
+      <label class="field"><span>Am</span><select name="pDay">${Array.from({length: 28}, (_, i) => `<option value="${i + 1}" ${(p.day || 1) === i + 1 ? 'selected' : ''}>${i + 1}. des Monats</option>`).join('')}</select></label>
+      <label class="field"><span>Verbuchen</span><select name="pAuto"><option value="">selbst bestätigen</option><option value="1" ${p.auto ? 'selected' : ''}>automatisch (Dauerauftrag)</option></select></label>
+    </div>
+    <p class="hint">Mit Dauerauftrag in deiner Banking-App läuft der Sparplan von selbst. Die App verbucht die Rate dann jeden Monat automatisch.</p>
+    <div class="section-h"><span>Sparkonto (optional)</span></div>
+    <div class="fgroup">
+      <label class="field"><span>Empfänger</span><input name="bName" value="${esc(bk.name || '')}" placeholder="z. B. dein Name"></label>
+      <label class="field"><span>IBAN</span><input name="bIban" value="${esc(bk.iban || '')}" placeholder="DE…" autocapitalize="characters" spellcheck="false"></label>
+      <label class="field"><span>Zweck</span><input name="bPurpose" value="${esc(bk.purpose || '')}" placeholder="z. B. Sparen Urlaub"></label>
+    </div>
+    <p class="hint">Wird nur auf diesem iPhone gespeichert und hilft beim Überweisen.</p>
+    <div class="fgroup"><div class="emojis">${GOAL_ICONS.map(n => `<button type="button" data-icon="${n}" class="${n === st.icon ? 'on' : ''}" aria-label="${n}">${lucide(n)}</button>`).join('')}</div></div>
+    <div class="fgroup"><div class="colors">${COLORS.map(c => `<button type="button" data-color="${c}" class="${c === st.color ? 'on' : ''}" style="background:${c}" aria-label="Farbe"></button>`).join('')}</div></div>
+    ${id ? `<div class="btns"><button class="btn danger" data-act="delGoal" data-id="${id}">${ICON.trash} Ziel löschen</button></div>` : ''}
+  </form></div>`);
+  const form = $('#gForm');
+  const need = () => {
+    const t = parseAmount(form.target.value) - (id ? goalSaved(g) : 0), d = form.due.value;
+    if (!(t > 0) || !d) { $('#gNeed').textContent = ''; return; }
+    const dd = new Date(d + 'T00:00'), n = Math.max(1, (dd.getFullYear() - new Date().getFullYear()) * 12 + dd.getMonth() - new Date().getMonth());
+    $('#gNeed').innerHTML = `Dafür brauchst du <b style="color:var(--text)">${eur(t / n)} pro Monat</b> (${n} ${n === 1 ? 'Monat' : 'Monate'}). <button type="button" class="link" style="color:var(--accent)" id="gUse">Übernehmen</button>`;
+    $('#gUse').onclick = () => { form.pAmount.value = amtStr(Math.ceil(t / n)); };
+  };
+  form.target.addEventListener('input', need); form.due.addEventListener('change', need); need();
+  app.addEventListener('click', function pick(e) {
+    if (cur().view !== 'goalEdit') return app.removeEventListener('click', pick);
+    const b = e.target.closest('[data-icon],[data-color]'); if (!b) return;
+    if (b.dataset.icon) { st.icon = b.dataset.icon; app.querySelectorAll('[data-icon]').forEach(x => x.classList.toggle('on', x === b)); }
+    if (b.dataset.color) { st.color = b.dataset.color; app.querySelectorAll('[data-color]').forEach(x => x.classList.toggle('on', x === b)); }
+    $('#gPrev').innerHTML = folderIcon(st, 80);
+  });
+  views.goalEdit.state = st;
+  if (!id) setTimeout(() => form.name.focus(), 50);
+};
+
+views.txEdit = ({id, kind: k0}) => {
+  const g0 = goalById(id), opts = S.fin.goals.map(g => `<option value="${g.id}" ${g.id === (g0?.id || S.fin.goals[0]?.id) ? 'selected' : ''}>${esc(g.name)}</option>`).join('');
+  setView(`
+  <header class="top"><button class="btn-text" data-act="back">Abbrechen</button><h1>Buchung</h1>
+    <button class="btn-text right strong" data-act="saveTx">Sichern</button></header>
+  <div class="wrap fin"><div class="fin-aura"></div><form id="tForm" autocomplete="off" onsubmit="return false">
+    <div style="display:flex;justify-content:center;margin-top:8px"><span class="seg" style="padding:4px">
+      <button type="button" class="on" data-kind="in" style="width:auto;padding:0 16px;height:32px">Einzahlung</button>
+      <button type="button" data-kind="out" style="width:auto;padding:0 16px;height:32px">Entnahme</button></span></div>
+    <input class="amt-input" name="amount" inputmode="decimal" placeholder="0 €" value="${g0?.plan?.amount ? amtStr(g0.plan.amount) : ''}">
+    <div class="amt-sub" id="tSub">wird deinem Ersparten gutgeschrieben</div>
+    <div class="quick">${[10, 25, 50, 100, 250].map(v => `<button type="button" data-q="${v}">+${v} €</button>`).join('')}</div>
+    <div class="fgroup">
+      <label class="field"><span>Ziel</span><select name="goal">${opts}<option value="">Allgemein (ohne Ziel)</option></select></label>
+      <label class="field"><span>Datum</span><input type="date" name="date" value="${localISO()}"></label>
+      <label class="field"><span>Notiz</span><input name="note" placeholder="optional"></label>
+    </div>
+  </form></div>`);
+  const form = $('#tForm'); let kind = 'in';
+  form.addEventListener('click', e => {
+    const k = e.target.closest('[data-kind]'), q = e.target.closest('[data-q]');
+    if (k) { kind = k.dataset.kind; form.querySelectorAll('[data-kind]').forEach(x => x.classList.toggle('on', x === k));
+      $('#tSub').textContent = kind === 'in' ? 'wird deinem Ersparten gutgeschrieben' : 'wird von deinem Ersparten abgezogen'; }
+    if (q) form.amount.value = amtStr(parseAmount(form.amount.value) + +q.dataset.q);
+  });
+  views.txEdit.kind = () => kind;
+  if (k0 === 'out') form.querySelector('[data-kind=out]').click();
+  if (!form.amount.value) setTimeout(() => form.amount.focus(), 50);
+};
+
+// Überweisen: Daten zum Kopieren + Versuch, die Banking-App zu öffnen (BezahlCode)
+views.transfer = ({id}) => {
+  const g = goalById(id); if (!g) return back();
+  const bk = g.bank || {}, amount = g.plan?.amount || '';
+  const row = (label, name, val, ph) => `<div class="cprow"><div class="rc"><div class="s">${label}</div><input name="${name}" value="${esc(val)}" placeholder="${ph}" ${name === 'iban' ? 'autocapitalize="characters" spellcheck="false"' : ''}${name === 'amount' ? 'inputmode="decimal"' : ''}></div>
+    <button type="button" class="cpb" data-act="copyField" data-f="${name}" aria-label="${label} kopieren">${lucide('copy')}</button></div>`;
+  setView(`
+  <header class="top"><button class="btn-text" data-act="back">${ICON.back}Zurück</button><h1>Überweisen</h1><div style="min-width:84px"></div></header>
+  <div class="wrap fin"><div class="fin-aura"></div><form id="trForm" autocomplete="off" onsubmit="return false">
+    <div class="info" style="margin-top:8px">${lucide('shield-check')}<div><b>Die Überweisung machst du in deiner Banking-App.</b> Banken lassen fremde Apps aus Sicherheitsgründen keine Überweisungen auslösen. Hier hast du alle Daten zum schnellen Kopieren.</div></div>
+    <div class="fgroup">
+      ${row('Empfänger', 'name', bk.name || '', 'Kontoinhaber')}
+      ${row('IBAN', 'iban', bk.iban || '', 'DE…')}
+      ${row('Betrag', 'amount', amtStr(amount), '0,00')}
+      ${row('Verwendungszweck', 'purpose', bk.purpose || `Sparen ${g.name}`, 'Zweck')}
+    </div>
+    <div class="btns">
+      <button class="btn bank" data-act="openSparkasse" data-id="${id}">${lucide('external-link')} Sparkasse öffnen</button>
+      <button class="btn primary" data-act="transferDone" data-id="${id}">${ICON.check} Ich habe überwiesen</button>
+    </div>
+    <p class="hint">Beim Öffnen wird die IBAN automatisch kopiert, du fügst sie in der Sparkasse-App im Feld IBAN ein.</p>
+    <details class="setup" ${lsGet('fin.bankSetup', '') ? '' : 'open'}>
+      <summary>${lucide('wrench', 'i sm')} Einmalig einrichten (1 Minute)</summary>
+      <ol>
+        <li>Öffne auf dem iPhone die App <b>Kurzbefehle</b> und tippe auf <b>＋</b>.</li>
+        <li>Tippe auf <b>Aktion hinzufügen</b>, suche <b>App öffnen</b> und wähle als App <b>Sparkasse</b>.</li>
+        <li>Tippe oben auf den Namen und nenne den Kurzbefehl genau <b>Sparkasse</b>. Fertig.</li>
+      </ol>
+      <p>Beim ersten Mal fragt iOS, ob PiggySpare den Kurzbefehl ausführen darf. Tippe auf „Erlauben“.</p>
+      <button type="button" class="link" data-act="bankSetupDone" style="color:var(--accent)">Ist eingerichtet</button>
+    </details>
+    <button class="btn" style="margin-top:10px" data-act="openBank" data-id="${id}">${lucide('external-link')} Mit Daten öffnen (BezahlCode, Test)</button>
+    <div class="info" style="margin-top:16px">${lucide('repeat')}<div><b>Tipp: Dauerauftrag statt jeden Monat überweisen</b><br>Richte in deiner Banking-App einen Dauerauftrag auf dein Sparkonto ein und stelle beim Ziel „Verbuchen: automatisch“ ein. Dann zählt die App jeden Monat von selbst mit.</div></div>
+  </form></div>`);
+};
+async function rememberBank(g, form) {
+  const nb = {name: form.name.value.trim(), iban: form.iban.value.replace(/\s+/g, '').toUpperCase(), purpose: form.purpose.value.trim()};
+  if (JSON.stringify(nb) !== JSON.stringify(g.bank || {})) { g.bank = nb; await saveFin(); }
+}
+
+function loadImage(file) {
+  return new Promise((res, rej) => {
+    const u = URL.createObjectURL(file); const i = new Image();
+    i.onload = () => { URL.revokeObjectURL(u); res(i); };
+    i.onerror = () => { URL.revokeObjectURL(u); rej(new Error('Bild konnte nicht geladen werden')); };
+    i.src = u;
+  });
+}
+function newCanvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+function ctx2d(c) { return c.getContext('2d', {willReadFrequently: true}); }
+/* ---------- Teilen / Speichern ---------- */
+function downloadFile(file) {
+  const u = URL.createObjectURL(file), a = document.createElement('a');
+  a.href = u; a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 60000);
+}
+function shareNow(file) {
+  if (navigator.canShare && navigator.canShare({files: [file]})) {
+    return navigator.share({files: [file]}).then(() => true, e => { if (e.name === 'AbortError') return true; throw e; });
+  }
+  downloadFile(file); return Promise.resolve(true);
+}
+// iOS erlaubt "Teilen" nur direkt nach einem Tipp. Klappt es nicht, fragen wir noch einmal nach.
+async function offerFile(file, label) {
+  try { await shareNow(file); }
+  catch (e) {
+    sheet(`${label} ist fertig (${fmtSize(file.size)})`, [{label: 'Teilen / In „Dateien“ sichern', run: () => shareNow(file).catch(() => downloadFile(file))}]);
+  }
+}
+
+const actions = {
+  back,
+  hideBanner() { lsSet('ablage.banner', 'off'); render(); },
+  newFolder(t) { go('folderEdit', {parent: t.dataset.parent || ''}); },
+  scan(t) { startSession({folderId: t.dataset.ctx || ''}); cam.click(); },
+  importMenu(t) {
+    const ctx = t.dataset.ctx || '';
+    sheet('Hinzufügen', [
+      {label: 'Foto aus der Mediathek', run: () => { startSession({folderId: ctx}); photos.click(); }},
+      {label: 'PDF-Datei importieren', run: () => { startSession({folderId: ctx}); pdfIn.click(); }},
+    ]);
+  },
+  importPhotos() { startSession({folderId: ''}); photos.click(); },
+  importPdf() { startSession({folderId: ''}); pdfIn.click(); },
+  navHome() { if (cur().view !== 'home' || stack.length > 1) resetTo({view: 'home', params: {}}); },
+  navDeadlines() { if (cur().view !== 'deadlines') go('deadlines'); },
+  navBackup() { if (cur().view !== 'backup') go('backup'); },
+  navFinance() { if (cur().view !== 'finance') go('finance'); },
+  openGoal(t) { go('goal', {id: t.dataset.id}); },
+  newTx(t) { go('txEdit', {id: t.dataset.id || '', kind: t.dataset.kind || 'in'}); },
+  // Verlauf: nur den Diagramm-Bereich neu zeichnen (die restliche Seite bleibt stehen)
+  vlRange(t) { lsSet('fin.vlRange', t.dataset.v); const v = $('#vl'); if (v) { v.outerHTML = verlaufHtml(); vlScrub(); } },
+  vlMode(t) { lsSet('fin.vlMode', t.dataset.v); const v = $('#vl'); if (v) { v.outerHTML = verlaufHtml(); vlScrub(); } },
+  jumpRates() { const r = $('#rates'); if (r) r.scrollIntoView({behavior: 'smooth', block: 'start'}); else toast('Keine Sparrate fällig'); },
+  pickTransfer() {
+    const gs = S.fin.goals;
+    if (!gs.length) return toast('Lege zuerst ein Sparziel an');
+    if (gs.length === 1) return go('transfer', {id: gs[0].id});
+    sheet('Überweisen für …', gs.map(g => ({label: g.name, run: () => go('transfer', {id: g.id})})));
+  },
+  openTransfer(t) { go('transfer', {id: t.dataset.id}); },
+  async payRate(t) {
+    const g = goalById(t.dataset.id), k = t.dataset.k; if (!g) return;
+    const r = await addTx(g.id, g.plan.amount, {plan: k, date: k === monthKey() ? localISO() : `${k}-${pad2(g.plan.day || 1)}`});
+    cur().scroll = scrollY; render(true); reward(r);
+  },
+  skipRate(t) {
+    const g = goalById(t.dataset.id), k = t.dataset.k; if (!g) return;
+    confirmSheet(`Sparrate ${monthName(k, true)} für „${g.name}“ überspringen?`, 'Überspringen', async () => {
+      S.fin.tx.push({id: uid(), goalId: g.id, amount: 0, date: `${k}-${pad2(g.plan.day || 1)}`, plan: k, skipped: true, created: Date.now()});
+      await saveFin(); cur().scroll = scrollY; render(true);
+    });
+  },
+  async saveTx(t) {
+    const form = $('#tForm'), a = parseAmount(form.amount.value);
+    if (!(a > 0)) return toast('Bitte einen Betrag eingeben');
+    const amount = views.txEdit.kind() === 'out' ? -a : a;
+    t.disabled = true;
+    const r = await addTx(form.goal.value || null, amount, {date: form.date.value || localISO(), note: form.note.value.trim()});
+    back(); reward(r);
+    if (amount < 0) toast(`${eur(-amount)} entnommen`);
+  },
+  txMenu(t) {
+    const x = S.fin.tx.find(y => y.id === t.dataset.id); if (!x) return;
+    confirmSheet(`Buchung vom ${fmtDate(x.date)} über ${eur(x.amount)} löschen?`, 'Buchung löschen', async () => {
+      S.fin.tx = S.fin.tx.filter(y => y !== x); await saveFin(); render(true); toast('Gelöscht');
+    });
+  },
+  async saveGoal(t) {
+    const form = $('#gForm'), v = Object.fromEntries(new FormData(form)), st = views.goalEdit.state, id = t.dataset.id;
+    const name = v.name.trim(), target = parseAmount(v.target);
+    if (!name) return toast('Wofür sparst du? Bitte einen Namen eingeben');
+    if (!(target > 0)) return toast('Bitte einen Zielbetrag eingeben');
+    const old = id ? goalById(id) : null, amount = parseAmount(v.pAmount);
+    const plan = {amount, day: +v.pDay || 1, auto: v.pAuto === '1',
+      start: old?.plan?.amount > 0 && old.plan.start ? old.plan.start : (new Date().getDate() > (+v.pDay || 1) ? addMonths(monthKey(), 1) : monthKey())};
+    const fields = {name, target, due: v.due, icon: st.icon, color: st.color, plan,
+      bank: {name: v.bName.trim(), iban: v.bIban.replace(/\s+/g, '').toUpperCase(), purpose: v.bPurpose.trim()}};
+    if (old) Object.assign(old, fields); else S.fin.goals.push({id: uid(), created: Date.now(), ...fields});
+    const badges = checkBadges(); await saveFin();
+    if (old) { back(); toast('Gespeichert'); }
+    else { stack.pop(); go('goal', {id: S.fin.goals[S.fin.goals.length - 1].id}); confetti(.6); toast('Sparziel gesetzt – los geht’s!'); }
+    badges.forEach((b, i) => setTimeout(() => toast(`Erfolg freigeschaltet: ${b[1]}`), 2700 * (i + 1)));
+  },
+  delGoal(t) {
+    const g = goalById(t.dataset.id), n = S.fin.tx.filter(x => x.goalId === g.id).length;
+    confirmSheet(`Ziel „${g.name}“${n ? ` und ${n} Buchungen` : ''} löschen?`, 'Ziel löschen', async () => {
+      S.fin.goals = S.fin.goals.filter(x => x !== g); S.fin.tx = S.fin.tx.filter(x => x.goalId !== g.id);
+      await saveFin(); stack.pop(); if (cur().view === 'goal') stack.pop(); render(true); toast('Gelöscht');
+    });
+  },
+  async copyField(t) {
+    const inp = $('#trForm')[t.dataset.f]; let v = inp.value.trim();
+    if (t.dataset.f === 'iban') v = v.replace(/\s+/g, '').toUpperCase();
+    if (!v) return toast('Feld ist leer');
+    try { await navigator.clipboard.writeText(v); } catch { inp.select(); document.execCommand('copy'); }
+    t.classList.add('ok'); t.innerHTML = ICON.check; setTimeout(() => { t.classList.remove('ok'); t.innerHTML = lucide('copy'); }, 1400);
+    toast('Kopiert');
+  },
+  openBank(t) {
+    const g = goalById(t.dataset.id), form = $('#trForm');
+    const iban = form.iban.value.replace(/\s+/g, '').toUpperCase(), a = parseAmount(form.amount.value);
+    if (!iban) return toast('Bitte zuerst die IBAN eintragen');
+    rememberBank(g, form);
+    const q = new URLSearchParams({name: form.name.value.trim(), iban, amount: a ? a.toFixed(2).replace('.', ',') : '', reason: form.purpose.value.trim()});
+    location.href = 'bank://singlepaymentsepa?' + q.toString().replace(/\+/g, '%20');
+  },
+  // Sparkasse-App über einen iOS-Kurzbefehl „Sparkasse“ öffnen (Banking-Apps bieten keinen offiziellen Direkt-Link); vorher IBAN kopieren
+  async openSparkasse(t) {
+    const g = goalById(t.dataset.id) || S.fin.goals.find(x => x.bank?.iban), form = $('#trForm');
+    if (form && g) await rememberBank(g, form);
+    const iban = (form ? form.iban.value : g?.bank?.iban || '').replace(/\s+/g, '').toUpperCase();
+    if (iban) { try { await navigator.clipboard.writeText(iban); toast('IBAN kopiert – in der Sparkasse-App einfügen'); } catch {} }
+    lsSet('fin.bankSetup', '1');
+    setTimeout(() => { location.href = 'shortcuts://run-shortcut?name=' + encodeURIComponent('Sparkasse'); }, iban ? 350 : 0);
+  },
+  bankSetupDone() { lsSet('fin.bankSetup', '1'); const d = $('details.setup'); if (d) d.open = false; toast('Prima!'); },
+  async transferDone(t) {
+    const g = goalById(t.dataset.id), form = $('#trForm'), a = parseAmount(form.amount.value);
+    if (!(a > 0)) return toast('Bitte den Betrag eintragen');
+    await rememberBank(g, form);
+    const k = pendingRates().find(p => p.g.id === g.id)?.key;
+    const r = await addTx(g.id, a, k ? {plan: k} : {note: 'Überweisung'});
+    back(); reward(r);
+  },
+  async setDocView(t) { const f = folderById(t.dataset.id); if (!f) return; f.docView = t.dataset.v; await dbPut('folders', f); cur().scroll = scrollY; render(true); },
+  focusSearch() { const q = $('#q'); if (q) { q.focus(); q.scrollIntoView({block: 'center', behavior: 'smooth'}); } },
+  applyUpdate() { applyUpdate(); },
+  checkUpdateNow() { checkUpdate(true); },
+  onbNext() { go('onboarding', {step: 2}); },
+  setFolderView(t) { if (folderView() !== t.dataset.v) { lsSet('ablage.folderView', t.dataset.v); cur().scroll = scrollY; render(true); } },
+  openProfile() { pfDraft = null; go('profile'); },
+  pickAvatar() { avatarIn.click(); },
+  removeAvatar() { pfDraft.photo = ''; render(true); },
+  async saveProfile() {
+    const name = ($('#pfName')?.value || '').trim(), first = cur().view === 'onboarding';
+    await saveProfileData(name, pfDraft?.photo || '');
+    if (first) { resetTo({view: 'home', params: {}}); toast(name ? `Willkommen, ${name}!` : 'Willkommen!'); }
+    else { back(); toast('Profil gespeichert'); }
+  },
+  async skipProfile() { await saveProfileData('', ''); resetTo({view: 'home', params: {}}); },
+  scanMore() { cam.click(); },
+  photosMore() { photos.click(); },
+  addPages(t) { startSession({docId: t.dataset.id}); cam.click(); },
+  addPhotos(t) { startSession({docId: t.dataset.id}); photos.click(); },
+  removePage(t) {
+    const i = +t.dataset.i, p = S.session.pages[i];
+    confirmSheet('Seite ' + (i + 1) + ' entfernen?', 'Seite entfernen', () => { URL.revokeObjectURL(p.url); S.session.pages.splice(i, 1); render(true); });
+  },
+  movePage(t) { const i = +t.dataset.i, a = S.session.pages; [a[i - 1], a[i]] = [a[i], a[i - 1]]; render(true); },
+  cancelSession() {
+    const n = S.session?.pages.length || 0;
+    const quit = () => { cleanupSession(); back(); };
+    if (n) confirmSheet(`${n} gescannte ${n === 1 ? 'Seite' : 'Seiten'} verwerfen?`, 'Verwerfen', quit); else quit();
+  },
+  async finishSession(t) {
+    const s = S.session;
+    if (!s.docId) return go('docForm', {mode: 'new'});
+    t.disabled = true;
+    const d = docById(s.docId);
+    d.pageIds = [...(d.pageIds || []), ...await storePages(s.pages)]; d.updated = Date.now();
+    await dbPut('docs', d); cleanupSession(); back(); toast('Seiten hinzugefügt');
+  },
+  async saveDoc(t) {
+    const form = $('#docForm'), v = Object.fromEntries(new FormData(form));
+    if (v.folderId === '__new') v.folderId = '';
+    const fields = {title: v.title.trim() || 'Ohne Titel', sender: v.sender.trim(), folderId: v.folderId || null, date: v.date, due: v.due, note: v.note.trim()};
+    t.disabled = true;
+    try {
+      const c = cur();
+      if (c.params.mode === 'edit') {
+        const d = docById(c.params.id); Object.assign(d, fields, {updated: Date.now()});
+        await dbPut('docs', d); back(); toast('Gespeichert'); return;
+      }
+      const s = S.session, d = {id: uid(), ...fields, done: false, created: Date.now(), updated: Date.now()};
+      if (s.pdf) {
+        const id = uid(); await dbPut('blobs', {id, data: await s.pdf.arrayBuffer(), type: 'application/pdf'});
+        Object.assign(d, {kind: 'pdf', blobId: id, size: s.pdf.size});
+      } else {
+        Object.assign(d, {kind: 'scan', pageIds: await storePages(s.pages), thumb: await makeThumb(s.pages[0].blob)});
+      }
+      await dbPut('docs', d); S.docs.push(d); cleanupSession(); requestPersist();
+      const entries = [{view: 'home', params: {}}];
+      if (d.folderId) entries.push({view: 'folder', params: {id: d.folderId}});
+      entries.push({view: 'doc', params: {id: d.id}});
+      resetTo(...entries); toast('Abgelegt');
+    } catch (e) { t.disabled = false; toast('Speichern fehlgeschlagen: ' + e.message); }
+  },
+  async toggleDone(t) { const d = docById(t.dataset.id); d.done = !d.done; d.updated = Date.now(); await dbPut('docs', d); render(true); },
+  async sharePdf(t) {
+    const d = docById(t.dataset.id);
+    try { const blob = await docPdf(d); await offerFile(new File([blob], pdfName(d), {type: 'application/pdf'}), 'PDF'); }
+    catch (e) { toast('PDF-Fehler: ' + e.message); }
+  },
+  delDoc(t) {
+    const d = docById(t.dataset.id);
+    confirmSheet(`„${d.title}“ endgültig löschen?`, 'Dokument löschen', async () => {
+      for (const id of d.kind === 'pdf' ? [d.blobId] : d.pageIds || []) await dbDel('blobs', id);
+      await dbDel('docs', d.id); S.docs = S.docs.filter(x => x !== d); back(); toast('Gelöscht');
+    });
+  },
+  delPage(t) {
+    const d = docById(t.dataset.id), pid = t.dataset.pid;
+    confirmSheet('Diese Seite entfernen?', 'Seite entfernen', async () => {
+      const first = d.pageIds[0] === pid;
+      d.pageIds = d.pageIds.filter(x => x !== pid); await dbDel('blobs', pid);
+      if (first && d.pageIds[0]) { const b = await dbGet('blobs', d.pageIds[0]); d.thumb = await makeThumb(new Blob([b.data], {type: b.type})); }
+      await dbPut('docs', d); render(true);
+    });
+  },
+  async saveFolder(t) {
+    const name = $('#fName').value.trim(); if (!name) return toast('Bitte einen Namen eingeben');
+    const st = views.folderEdit.state, id = t.dataset.id;
+    const pv = $('#fParent').value || null;
+    st.parentId = pv && folderById(pv) && !(id && descendantIds(id).includes(pv)) ? pv : null;
+    if (id) { const f = folderById(id); Object.assign(f, {name, ...st}); await dbPut('folders', f); }
+    else { const f = {id: uid(), name, ...st, order: S.folders.length}; await dbPut('folders', f); S.folders.push(f); }
+    back();
+  },
+  delFolder(t) {
+    const f = folderById(t.dataset.id), up = parentOf(f);
+    const subs = childFolders(f.id).length;
+    confirmSheet(`Ordner „${f.name}“ löschen?${subs ? ` Die ${subs} Unterordner bleiben erhalten.` : ''}`, 'Ordner löschen', async () => {
+      for (const d of S.docs.filter(x => x.folderId === f.id)) { d.folderId = up; await dbPut('docs', d); }
+      for (const c of childFolders(f.id)) { c.parentId = up; await dbPut('folders', c); }
+      await dbDel('folders', f.id); S.folders = S.folders.filter(x => x !== f);
+      stack.pop(); if (cur().view === 'folder' && cur().params.id === f.id) stack.pop(); render(true);
+    });
+  },
+  async exportPdfs() {
+    if (!S.docs.length) return toast('Noch keine Dokumente');
+    toast('PDFs werden erstellt…');
+    const files = [], used = new Set(), enc = new TextEncoder();
+    for (const d of S.docs) {
+      const f = folderById(d.folderId), dir = f ? folderPath(f).map(x => safeName(x.name)).join('/') : 'Ohne Ordner';
+      files.push({name: uniquePath(used, `Ablage/${dir}/${pdfName(d)}`), data: new Uint8Array(await (await docPdf(d)).arrayBuffer())});
+    }
+    await offerFile(new File([makeZip(files)], `Ablage PDFs ${localISO()}.zip`, {type: 'application/zip'}), 'Export');
+  },
+  async backup() {
+    toast('Backup wird erstellt…');
+    const files = [], blobs = {};
+    for (const d of S.docs) for (const id of d.kind === 'pdf' ? [d.blobId] : d.pageIds || []) {
+      const b = await dbGet('blobs', id); if (!b) continue;
+      blobs[id] = {type: b.type, w: b.w, h: b.h}; files.push({name: 'daten/' + id, data: new Uint8Array(b.data)});
+    }
+    const meta = {app: 'ablage', version: 1, created: new Date().toISOString(), folders: S.folders, docs: S.docs, blobs, profile: S.profile, finance: S.fin};
+    files.unshift({name: 'ablage.json', data: new TextEncoder().encode(JSON.stringify(meta))});
+    await offerFile(new File([makeZip(files)], `Ablage Backup ${localISO()}.zip`, {type: 'application/zip'}), 'Backup');
+    S.meta = {...(S.meta || {id: '__meta'}), lastBackup: Date.now(), lastBackupCount: S.docs.length};
+    await dbPut('blobs', S.meta);
+    if (['home', 'folder', 'deadlines', 'settings', 'backup'].includes(cur().view)) render(true);
+  },
+  restore() { backupIn.click(); },
+};
+
+/* ---------- Finanzen-App: Start, Willkommen, Einstellungen, Backup ---------- */
+views.home = views.finance; // Startseite der App ist die Finanzübersicht
+
+// Erster Start: Willkommen (Schritt 1), Profil (Schritt 2); Daten aus der Ablage werden angeboten, falls vorhanden
+views.onboarding = ({step}) => {
+  if (step === 2) return profileForm(true);
+  setView(`
+  <div class="onb">
+    <div class="orb"></div>
+    <div class="onb-logo">${lucide('piggy-bank')}PiggySpare</div>
+    <h1 class="onb-h"><span class="dim">Dein</span><br>Geld.<br><span class="dim">Deine</span><br>Ziele.</h1>
+    <p class="onb-p">Sparziele setzen, Sparpläne führen und zusehen, wie dein Erspartes wächst. Alles bleibt auf deinem iPhone.</p>
+    <div class="dots"><i></i><b></b></div>
+    <div class="cta"><button class="go" data-act="onbNext">Los geht's</button><button class="arrow" data-act="onbNext" aria-label="Weiter">${ICON.arrow}</button></div>
+  </div>`);
+};
+
+async function offerAblageImport(auto) {
+  const a = await readAblage();
+  const n = a?.fin ? (a.fin.goals?.length || 0) + (a.fin.tx?.length || 0) : 0;
+  if (!n) { if (!auto) toast('In der Ablage wurden keine Finanzdaten gefunden'); return; }
+  sheet(`In deiner Ablage-App gibt es ${a.fin.goals?.length || 0} Sparziele und ${a.fin.tx?.length || 0} Buchungen. Übernehmen?`, [
+    {label: 'Ja, übernehmen', run: async () => {
+      const r = await mergeFin(a.fin);
+      render(true); confetti(.8);
+      toast(r.g || r.t ? `${r.g} Ziele und ${r.t} Buchungen übernommen` : 'Alles war schon da');
+    }},
+  ]);
+}
+
+views.settings = () => {
+  const last = S.meta?.lastBackup;
+  setView(`<div class="fin-aura"></div>
+  <header class="top fin-top"><button class="btn-text" data-act="back">${ICON.back}Zurück</button><h1>Einstellungen</h1><div style="min-width:84px"></div></header>
+  <div class="wrap fin">
+    <div class="section-h" style="margin-top:12px"><span>Profil</span></div>
+    <div class="list"><button class="row" data-act="openProfile">
+      <span class="avatar" style="width:46px;height:46px">${S.profile?.photo ? `<img src="${S.profile.photo}" alt="">` : LOGO}</span>
+      <div class="rc"><div class="t">${esc(S.profile?.name || 'Kein Name')}</div><div class="s">Name und Profilbild ändern</div></div>${ICON.chev}</button></div>
+    ${updateCard()}
+    <div class="section-h"><span>Sichern</span></div>
+    <div class="list">
+      <button class="row" data-act="exportBackup"><span class="set-row-i">${ICON.cloud}</span><div class="rc"><div class="t">Backup erstellen</div>
+        <div class="s">${last ? `Zuletzt am ${new Date(last).toLocaleDateString('de-DE')}` : 'Noch nie gesichert'}</div></div>${ICON.chev}</button>
+      <button class="row" data-act="importBackup"><span class="set-row-i">${lucide('download')}</span><div class="rc"><div class="t">Backup importieren</div><div class="s">Datei aus „Dateien“ oder iCloud Drive wählen</div></div>${ICON.chev}</button>
+      <button class="row" data-act="importAblage"><span class="set-row-i">${lucide('arrow-left-right')}</span><div class="rc"><div class="t">Aus der Ablage-App übernehmen</div><div class="s">Sparziele und Buchungen von dort holen</div></div>${ICON.chev}</button>
+    </div>
+    <p class="hint">Deine Daten liegen nur auf diesem iPhone. Sichere das Backup ab und zu in „Dateien“ oder iCloud Drive.</p>
+    <div class="section-h"><span>Übersicht</span></div>
+    <div class="meta">
+      <div class="mrow"><span class="k">Sparziele</span><span class="v">${S.fin.goals.length}</span></div>
+      <div class="mrow"><span class="k">Buchungen</span><span class="v">${S.fin.tx.length}</span></div>
+      <div class="mrow"><span class="k">Erfolge</span><span class="v">${S.fin.badges.length} / ${BADGES.length}</span></div>
+    </div>
+    <div class="section-h"><span>App</span></div>
+    <div class="meta"><div class="mrow"><span class="k">Version</span><span class="v">${APP_VERSION}</span></div></div>
+    <div class="btns"><button class="btn" data-act="checkUpdateNow">${ICON.rotate} Nach Updates suchen</button></div>
+  </div>
+  ${bottomNav('settings')}`);
+};
+
+Object.assign(actions, {
+  navHome() { if (cur().view !== 'home' || stack.length > 1) resetTo({view: 'home', params: {}}); },
+  navFinance() { actions.navHome(); },
+  navSettings() { if (cur().view !== 'settings') go('settings'); },
+  async saveProfile() {
+    const name = ($('#pfName')?.value || '').trim(), first = cur().view === 'onboarding';
+    await saveProfileData(name, pfDraft?.photo || '');
+    if (first) { resetTo({view: 'home', params: {}}); toast(name ? `Willkommen, ${name}!` : 'Willkommen!'); setTimeout(() => offerAblageImport(true), 900); }
+    else { back(); toast('Profil gespeichert'); }
+  },
+  async skipProfile() { await saveProfileData('', ''); resetTo({view: 'home', params: {}}); setTimeout(() => offerAblageImport(true), 700); },
+  async onbNext() {
+    // Profil aus der Ablage vorschlagen (Name + Bild), falls dort schon eins angelegt ist
+    if (!pfDraft) { const a = await readAblage(); pfDraft = {name: a?.prof?.name || '', photo: a?.prof?.photo || ''}; }
+    go('onboarding', {step: 2});
+  },
+  async exportBackup() {
+    const data = {app: 'finanzen', version: 1, created: new Date().toISOString(), finance: S.fin, profile: S.profile};
+    await offerFile(new File([JSON.stringify(data)], `PiggySpare Backup ${localISO()}.json`, {type: 'application/json'}), 'Backup');
+    S.meta = {...S.meta, id: '__meta', lastBackup: Date.now()}; await dbPut('blobs', S.meta);
+    if (cur().view === 'settings') render(true);
+  },
+  importBackup() { importIn.click(); },
+  importAblage() { offerAblageImport(false); },
+});
+
+avatarIn.addEventListener('change', async () => {
+  const f = avatarIn.files[0]; avatarIn.value = ''; if (!f || !pfDraft) return;
+  try { pfDraft.photo = await avatarFromFile(f); render(true); } catch (e) { toast(e.message); }
+});
+importIn.addEventListener('change', async () => {
+  const f = importIn.files[0]; importIn.value = ''; if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    const fin = data.finance || (data.goals && data.tx ? data : null);
+    if (!fin) throw new Error('Diese Datei ist kein PiggySpare-Backup.');
+    if (data.profile && !S.profile?.name) { S.profile = {...data.profile, done: true}; await dbPut('blobs', S.profile); }
+    const r = await mergeFin(fin);
+    render(true); toast(`${r.g} Ziele und ${r.t} Buchungen wiederhergestellt`);
+  } catch (e) { toast(e.message || 'Backup konnte nicht gelesen werden'); }
+});
+document.addEventListener('click', e => {
+  if (e.target.closest('.editor,.sheet-bg')) return;
+  const t = e.target.closest('[data-act],[data-go],[data-doc],[data-folder]'); if (!t) return;
+  if (t.dataset.act) { e.preventDefault(); actions[t.dataset.act]?.(t); }
+  else if (t.dataset.go) go(t.dataset.go, {id: t.dataset.id, mode: t.dataset.mode});
+  else if (t.dataset.doc) go('doc', {id: t.dataset.doc});
+  else if (t.dataset.folder) go('folder', {id: t.dataset.folder});
+});
+
+/* ---------- Updates ---------- */
+// Holt die aktuelle index.html direkt vom Server (an der Zwischenspeicherung vorbei) und vergleicht die Version.
+let updateReady = false, lastCheck = 0;
+const VERSION_RE = new RegExp("APP_" + "VERSION = '([0-9.\\-]+)'");
+const freshIndex = () => fetch('./index.html?fresh=' + Date.now(), {cache: 'no-store'});
+async function checkUpdate(manual) {
+  if (!manual && Date.now() - lastCheck < 60000) return;
+  lastCheck = Date.now();
+  try {
+    const r = await freshIndex(); if (!r.ok) throw new Error(r.status);
+    const m = (await r.text()).match(VERSION_RE);
+    const found = !!(m && m[1] !== APP_VERSION);
+    if (found && !updateReady) { updateReady = m[1]; if (['home', 'settings'].includes(cur().view)) render(true); }
+    if (manual) toast(found ? 'Neue Version gefunden' : 'Du hast die neueste Version');
+  } catch { if (manual) toast('Keine Verbindung – bitte später erneut versuchen'); }
+}
+async function applyUpdate() {
+  toast('Wird aktualisiert…');
+  try {
+    const html = await (await freshIndex()).text();
+    if ('caches' in window) {
+      for (const k of await caches.keys()) {
+        if (!k.startsWith('finanzen-') || k.includes('fonts')) continue;
+        const c = await caches.open(k);
+        for (const p of ['./', './index.html'])
+          await c.put(new Request(new URL(p, location.href)), new Response(html, {headers: {'Content-Type': 'text/html; charset=utf-8'}}));
+      }
+    }
+    const reg = await navigator.serviceWorker?.getRegistration?.();
+    if (reg) await reg.update().catch(() => {});
+  } catch {}
+  location.reload();
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkUpdate(); });
+
+
+/* ---------- Start ---------- */
+(async () => {
+  try { await loadAll(); }
+  catch (e) { app.innerHTML = `<div class="empty">${emptyIcon('triangle-alert')}Speicher nicht verfügbar.<br>${esc(e.message)}</div>`; return; }
+  const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  if (IS_DEV) { // Vorschau am PC: zuletzt geöffnete Ansicht nach dem Neuladen wiederherstellen
+    try { const s = JSON.parse(sessionStorage.getItem('finanzen.dev.stack') || 'null'); if (s && s.length && s.every(e => views[e.view])) { stack.length = 0; s.forEach(e => stack.push(e)); } } catch {}
+  }
+  // Erster Start: Willkommen + Profil
+  if (!S.profile?.done && cur().view !== 'onboarding') { stack.length = 0; stack.push({view: 'onboarding', params: {step: 1}}); }
+  render();
+  if (S.autoMsg && cur().view !== 'onboarding') { setTimeout(() => { confetti(.7); toast(S.autoMsg); }, 600); }
+  if (IS_DEV) {
+    scrollTo(0, +(sessionStorage.getItem('finanzen.dev.scroll') || 0)); devLiveReload();
+    navigator.serviceWorker?.getRegistrations?.().then(rs => rs.forEach(r => r.unregister())).catch(() => {});
+  }
+  else if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+  if (!IS_DEV) setTimeout(() => checkUpdate(), 1500);
+})();
+
+// Live-Vorschau (nur am PC über tools/serve.ps1): lädt neu, sobald sich eine Datei ändert
+function devLiveReload() {
+  // Stand beim letzten Neuladen merken – so geht auch eine Änderung direkt nach dem Neuladen nicht verloren
+  let last = sessionStorage.getItem('finanzen.dev.mtime');
+  setInterval(async () => {
+    try {
+      const t = await (await fetch('/__mtime', {cache: 'no-store'})).text();
+      if (last !== null && t !== last && !document.querySelector('.editor')) {
+        sessionStorage.setItem('finanzen.dev.stack', JSON.stringify(stack));
+        sessionStorage.setItem('finanzen.dev.scroll', String(scrollY));
+        sessionStorage.setItem('finanzen.dev.mtime', t);
+        location.reload();
+        return;
+      }
+      last = t; sessionStorage.setItem('finanzen.dev.mtime', t);
+    } catch {}
+  }, 1000);
+}
+</script>
+</body>
+</html>
