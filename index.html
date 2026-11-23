@@ -727,12 +727,19 @@ svg.vlc .ar{animation:fade 1.2s ease-out both}
 @media (prefers-reduced-motion:reduce){svg.vlc .ln{animation:none;stroke-dashoffset:0}}
 /* Buchungs-Popup: gleitet von unten herein, Hintergrund abgedunkelt und verschwommen */
 /* Hintergrund verschwommen und leicht abgedunkelt – nur die Karte bleibt scharf obenauf */
-.tx-pop-bg{position:fixed;inset:0;z-index:72;display:flex;flex-direction:column;justify-content:flex-end;
+.tx-pop-bg{position:fixed;inset:0;z-index:72;display:block;
   background:rgba(6,3,4,.32);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:fade .2s ease-out}
 body.tx-open .fc-wrap{z-index:73}
-.tx-pop{position:relative;width:100%;max-width:560px;margin:0 auto;padding:4px 16px calc(14px + env(safe-area-inset-bottom));border-radius:26px 26px 0 0;
-  background:rgba(18,10,11,.74);box-shadow:inset 0 0 22px rgba(255,255,255,.03),0 -10px 30px rgba(0,0,0,.35);
-  -webkit-backdrop-filter:blur(22px) saturate(1.2);backdrop-filter:blur(22px) saturate(1.2);animation:txUp .32s cubic-bezier(.2,.9,.25,1)}
+/* Kompaktes Popup direkt unter der Karte (statt Blatt von unten) */
+.tx-pop{position:absolute;left:16px;right:16px;top:300px;max-width:420px;margin:0 auto;padding:2px 14px 12px;border-radius:24px;transform-origin:top center;
+  background:rgba(18,10,11,.78);box-shadow:inset 0 0 22px rgba(255,255,255,.03),0 18px 40px rgba(0,0,0,.45);
+  -webkit-backdrop-filter:blur(22px) saturate(1.2);backdrop-filter:blur(22px) saturate(1.2);animation:popIn .26s cubic-bezier(.2,.9,.25,1);transition:top .25s ease}
+@keyframes popIn{from{opacity:0;transform:translateY(-10px) scale(.95)}}
+@keyframes popOut{to{opacity:0;transform:translateY(-8px) scale(.96)}}
+.tx-more-btn{display:block;margin:8px auto 0;background:none;border:0;color:rgba(246,243,248,.5);font-size:12.5px;padding:4px 8px}
+.tx-more-btn.on{color:rgba(246,243,248,.8)}
+.tx-pop .fgroup .tx-more .field{border-top:1px solid var(--line)}
+.tx-pop.kb .tx-more-btn{display:none}
 .tx-pop .amt-input{font-size:42px;padding-top:4px}
 .tx-pop .amt-sub{font-size:12px;margin-bottom:2px}
 .tx-pop .quick{margin:8px 0 2px}
@@ -748,9 +755,13 @@ body.tx-open .fc-wrap{z-index:73}
 .tx-seg-w{display:flex;justify-content:center;margin-top:2px}
 .tx-seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:none}
 .tx-seg button{height:26px;padding:0 13px;border:0;border-radius:999px;background:none;color:rgba(246,243,248,.55);font-size:12.5px;font-weight:500}
-.tx-seg button.on{color:#fff;background:linear-gradient(135deg,rgba(255,154,46,.42),rgba(232,52,28,.32));box-shadow:0 0 14px 1px rgba(255,110,40,.45),inset 0 0 10px rgba(255,170,110,.25)}
+.tx-seg button.on{color:#fff;background:linear-gradient(135deg,rgba(255,170,90,.16),rgba(232,70,40,.1));box-shadow:0 0 12px rgba(255,120,60,.18),inset 0 0 10px rgba(255,180,130,.12)}
 /* Betrag: groß und auffällig, mit +/− Umschalter links */
 .tx-amt-row{position:relative;display:flex;align-items:center;justify-content:center}
+.tx-amt{display:inline-flex;align-items:center;max-width:calc(100% - 84px)}
+.tx-pop .tx-amt .amt-input{padding:6px 0 0;min-width:40px;max-width:100%}
+.tx-pm{font-size:40px;font-weight:500;margin:6px 4px 0 0;color:#5fe39a;text-shadow:0 0 16px rgba(80,230,150,.35);line-height:1}
+.tx-pm.out{color:#ff4d5e;text-shadow:0 0 16px rgba(255,60,80,.35)}
 .tx-pop .amt-input{font-size:58px;font-weight:600;letter-spacing:-1.5px;padding:6px 44px 0;color:#fff;text-shadow:0 0 22px rgba(255,170,90,.35)}
 .tx-pop .amt-input::placeholder{color:rgba(246,243,248,.22);text-shadow:none}
 .tx-pop .amt-input.bump{animation:amtBump .28s cubic-bezier(.2,1.4,.4,1)}
@@ -770,7 +781,7 @@ body.tx-open .fc-wrap{z-index:73}
 .tx-pop .quick{gap:6px;flex-wrap:nowrap}
 .tx-pop .quick button{padding:0 10px;font-size:14px;flex:1 1 auto;min-width:0}
 .tx-pop-bg.closing{animation:fadeOut .23s ease-in forwards}
-.tx-pop-bg.closing .tx-pop{animation:txDown .23s ease-in forwards}
+.tx-pop-bg.closing .tx-pop{animation:popOut .2s ease-in forwards}
 @keyframes txUp{from{transform:translateY(100%)}}
 @keyframes txDown{to{transform:translateY(100%)}}
 @keyframes fadeOut{to{opacity:0}}
@@ -838,7 +849,7 @@ body::before{background:
 <script>
 'use strict';
 // Bei jeder neuen Version erhöhen – daran erkennt die App, dass es ein Update gibt.
-const APP_VERSION = '2026.11.23-42';
+const APP_VERSION = '2026.11.23-47';
 /* ---------- Helfer ---------- */
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1842,8 +1853,7 @@ function openTxSheet(id, k0) {
   const g0 = goalById(id), opts = S.fin.goals.map(g => `<option value="${g.id}" ${g.id === g0?.id ? 'selected' : ''}>${esc(g.name)}</option>`).join('');
   const m = document.createElement('div'); m.className = 'tx-pop-bg';
   m.innerHTML = `<div class="tx-pop" role="dialog" aria-label="Buchung">
-    <div class="tx-grip"></div>
-    <header class="tx-head"><button class="tx-x" data-act="closeTx" aria-label="Schließen">${lucide('chevron-down')}</button><h1>Buchung</h1>
+    <header class="tx-head"><button class="tx-x" data-act="closeTx" aria-label="Schließen">${ICON.x}</button><h1>Buchung</h1>
       <button class="btn-text right strong" data-act="saveTx">Sichern</button></header>
     <form id="tForm" class="fin" autocomplete="off" onsubmit="return false">
       <div class="tx-seg-w"><span class="tx-seg">
@@ -1851,15 +1861,18 @@ function openTxSheet(id, k0) {
         <button type="button" data-kind="out">Entnahme</button></span></div>
       <div class="tx-amt-row">
         <button type="button" class="tx-sign" data-sign aria-label="Stufen addieren oder abziehen">+</button>
-        <input class="amt-input" name="amount" inputmode="decimal" enterkeyhint="done" placeholder="0 ${curSym()}" value="${g0?.plan?.amount ? amtStr(g0.plan.amount) : ''}">
+        <span class="tx-amt"><b class="tx-pm" aria-hidden="true">+</b><input class="amt-input" name="amount" inputmode="decimal" enterkeyhint="done" placeholder="0 ${curSym()}" value="${g0?.plan?.amount ? amtStr(g0.plan.amount) : ''}"></span>
       </div>
-      <div class="amt-sub" id="tSub">wird deinem Ersparten gutgeschrieben</div>
+      <div class="amt-sub" id="tSub" hidden>wird deinem Ersparten gutgeschrieben</div>
       <div class="quick">${[10, 25, 50, 100, 250].map(v => `<button type="button" data-q="${v}">+${v} ${curSym()}</button>`).join('')}</div>
       <div class="fgroup">
-        <label class="field"><span>Ziel</span><select name="goal">${S.fin.goals.length ? `<option value="" ${g0 ? '' : 'selected'}>Auf alle Sparziele verteilen</option>` : ''}${opts}${S.fin.goals.length ? '' : '<option value="">Allgemein (ohne Ziel)</option>'}</select></label>
-        <label class="field"><span>Datum</span><input type="date" name="date" value="${localISO()}"></label>
-        <label class="field"><span>Notiz</span><input name="note" placeholder="optional"></label>
+        <label class="field"><span>Ziel</span><select name="goal">${S.fin.goals.length ? `<option value="" ${g0 ? '' : 'selected'}>Auf alle Ziele verteilen</option>` : ''}${opts}${S.fin.goals.length ? '' : '<option value="">Allgemein (ohne Ziel)</option>'}</select></label>
+        <div class="tx-more" hidden>
+          <label class="field"><span>Datum</span><input type="date" name="date" value="${localISO()}"></label>
+          <label class="field"><span>Notiz</span><input name="note" placeholder="optional"></label>
+        </div>
       </div>
+      <button type="button" class="tx-more-btn" data-more>Datum &amp; Notiz</button>
     </form></div>`;
   // Tippen auf den abgedunkelten Hintergrund schließt das Popup
   m.addEventListener('click', e => { if (e.target === m) closeTxSheet(); });
@@ -1868,6 +1881,7 @@ function openTxSheet(id, k0) {
   m.addEventListener('touchmove', e => { if (!e.target.closest('.tx-pop') || e.target.closest('.tx-pop') && !e.target.closest('select,textarea')) e.preventDefault(); }, {passive: false});
   document.body.appendChild(m); document.body.classList.add('tx-open');
   fitToViewport();
+  m.querySelector('[data-more]').addEventListener('click', e => { const box = m.querySelector('.tx-more'); box.hidden = !box.hidden; e.currentTarget.classList.toggle('on', !box.hidden); placePop(); });
   const fc = $('#fcard'); if (fc) fc._tx = true;
   const form = $('#tForm'); txKind = 'in'; let sgn = 1;
   form.addEventListener('click', e => {
@@ -1876,17 +1890,34 @@ function openTxSheet(id, k0) {
     if (sg) { sgn = -sgn; sg.textContent = sgn > 0 ? '+' : '−'; sg.classList.toggle('minus', sgn < 0);
       form.querySelectorAll('[data-q]').forEach(b => { b.textContent = `${sgn > 0 ? '+' : '−'}${b.dataset.q} ${curSym()}`; }); }
     if (k) { txKind = k.dataset.kind; form.querySelectorAll('[data-kind]').forEach(x => x.classList.toggle('on', x === k));
+      const pm = form.querySelector('.tx-pm'); pm.textContent = txKind === 'in' ? '+' : '−'; pm.classList.toggle('out', txKind !== 'in');
       $('#tSub').textContent = txKind === 'in' ? 'wird deinem Ersparten gutgeschrieben' : 'wird von deinem Ersparten abgezogen'; }
-    if (q) { form.amount.value = amtStr(Math.max(0, parseAmount(form.amount.value) + sgn * +q.dataset.q));
+    if (q) {
+      // Mit Vorzeichen rechnen: Einzahlung = +, Entnahme = −. Fällt der Wert unter 0, wechselt es automatisch zu Entnahme (und umgekehrt)
+      const signed = (txKind === 'in' ? 1 : -1) * parseAmount(form.amount.value) + sgn * +q.dataset.q;
+      if (signed !== 0) { const want = signed > 0 ? 'in' : 'out'; if (want !== txKind) form.querySelector(`[data-kind=${want}]`).click(); }
+      form.amount.value = amtStr(Math.round(Math.abs(signed) * 100) / 100);
       const a = form.amount; a.classList.remove('bump'); void a.offsetWidth; a.classList.add('bump'); }
   });
   if (k0 === 'out') form.querySelector('[data-kind=out]').click();
   // Tastatur offen beim Betrag: Popup schrumpft, sodass nur noch die Zahl (und Sichern) zu sehen ist
   const pop = m.querySelector('.tx-pop');
-  form.amount.addEventListener('focus', () => pop.classList.add('kb'));
-  form.amount.addEventListener('blur', () => setTimeout(() => { if (document.activeElement !== form.amount) pop.classList.remove('kb'); }, 60));
+  // Eingabefeld so breit wie die Zahl, damit das +/− direkt davor steht
+  const fitAmt = () => {
+    const a = form.amount, cs = getComputedStyle(a), c = fitAmt.c || (fitAmt.c = document.createElement('canvas').getContext('2d'));
+    c.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    a.style.width = `${Math.ceil(c.measureText(a.value || a.placeholder).width + 12)}px`;
+  };
+  form.amount.addEventListener('input', fitAmt); form.addEventListener('click', () => requestAnimationFrame(fitAmt)); fitAmt();
+  document.fonts?.ready.then(fitAmt);
+  // Nur verkleinern, wenn der Betrag angetippt ist UND die Tastatur wirklich offen ist (sichtbarer Bereich deutlich kleiner)
+  pop._kb = () => {
+    const vv = window.visualViewport, kbOpen = vv ? vv.height < innerHeight - 120 : true;
+    pop.classList.toggle('kb', document.activeElement === form.amount && kbOpen);
+  };
+  form.amount.addEventListener('focus', () => { pop._kb(); setTimeout(pop._kb, 350); });
+  form.amount.addEventListener('blur', () => setTimeout(pop._kb, 60));
   form.amount.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); form.amount.blur(); } });
-  if (!form.amount.value) setTimeout(() => form.amount.focus(), 260);
 }
 // Seite festhalten, solange das Popup offen ist (auch wenn die Tastatur aufgeht)
 let lockY = 0;
@@ -1899,6 +1930,15 @@ function lockScroll(on) {
 function fitToViewport() {
   const m = document.querySelector('.tx-pop-bg'), vv = window.visualViewport; if (!m || !vv) return;
   m.style.top = `${vv.offsetTop}px`; m.style.height = `${vv.height}px`; m.style.bottom = 'auto';
+  m.querySelector('.tx-pop')?._kb?.(); // Tastatur auf/zu → Popup klein/groß
+  placePop();
+}
+// Popup sitzt direkt unter der Karte; passt es nicht (z. B. Tastatur offen), rückt es so weit hoch wie nötig
+function placePop() {
+  const m = document.querySelector('.tx-pop-bg'), pop = m?.querySelector('.tx-pop'), card = $('#fcard'); if (!pop) return;
+  const vvTop = window.visualViewport?.offsetTop || 0, h = m.clientHeight || innerHeight;
+  const want = (card ? card.parentElement.getBoundingClientRect().bottom : 120) - vvTop + 10;
+  pop.style.top = `${Math.max(8, Math.min(want, h - pop.offsetHeight - 10))}px`;
 }
 if (window.visualViewport) { visualViewport.addEventListener('resize', fitToViewport); visualViewport.addEventListener('scroll', fitToViewport); }
 function closeTxSheet(now) {
