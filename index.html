@@ -744,7 +744,7 @@ body::before{background:
 <script>
 'use strict';
 // Bei jeder neuen Version erhöhen – daran erkennt die App, dass es ein Update gibt.
-const APP_VERSION = '2026.11.23-14';
+const APP_VERSION = '2026.11.23-15';
 /* ---------- Helfer ---------- */
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1080,6 +1080,29 @@ function checkBadges() {
   const fresh = BADGES.filter(b => !S.fin.badges.includes(b[0]) && b[3]());
   fresh.forEach(b => S.fin.badges.push(b[0]));
   return fresh;
+}
+// Einzahlung ohne Ziel: gleichmäßig auf alle noch offenen Sparziele verteilen (centgenau).
+// Ist ein Ziel dabei voll, wandert der Rest an die übrigen; was übrig bleibt, wird allgemein gebucht.
+function splitPlan(total) {
+  let open = S.fin.goals.filter(g => g.target > goalSaved(g)).map(g => ({g, rest: Math.round((g.target - goalSaved(g)) * 100)}));
+  let cents = Math.round(total * 100); const parts = new Map();
+  while (cents > 0 && open.length) {
+    const share = Math.floor(cents / open.length), extra = cents - share * open.length; let used = 0; const still = [];
+    open.forEach((o, i) => {
+      const take = Math.min(share + (i < extra ? 1 : 0), o.rest);
+      if (take > 0) { parts.set(o.g.id, (parts.get(o.g.id) || 0) + take); o.rest -= take; used += take; }
+      if (o.rest > 0) still.push(o);
+    });
+    cents -= used; open = still; if (!used) break;
+  }
+  return {parts: [...parts].map(([id, c]) => [id, c / 100]), left: cents / 100};
+}
+async function addSplitTx(total, extra = {}) {
+  const {parts, left} = splitPlan(total), split = uid(), rs = [];
+  for (const [id, a] of parts) rs.push(await addTx(id, a, {...extra, split}));
+  if (left > 0 || !rs.length) rs.push(await addTx(null, left || total, {...extra, split}));
+  const hit = rs.find(r => r.g && [25, 50, 75, 100].some(m => r.before < m && r.after >= m)) || rs[0];
+  return {r: {...hit, t: {...hit.t, amount: total}, badges: rs.flatMap(x => x.badges)}, n: parts.length};
 }
 async function addTx(goalId, amount, extra = {}) {
   const g = goalById(goalId), before = g ? goalPct(g) : 0;
@@ -1682,7 +1705,7 @@ views.goalEdit = ({id}) => {
 };
 
 views.txEdit = ({id, kind: k0}) => {
-  const g0 = goalById(id), opts = S.fin.goals.map(g => `<option value="${g.id}" ${g.id === (g0?.id || S.fin.goals[0]?.id) ? 'selected' : ''}>${esc(g.name)}</option>`).join('');
+  const g0 = goalById(id), opts = S.fin.goals.map(g => `<option value="${g.id}" ${g.id === g0?.id ? 'selected' : ''}>${esc(g.name)}</option>`).join('');
   setView(`
   <header class="top"><button class="btn-text" data-act="back">Abbrechen</button><h1>Buchung</h1>
     <button class="btn-text right strong" data-act="saveTx">Sichern</button></header>
@@ -1694,7 +1717,7 @@ views.txEdit = ({id, kind: k0}) => {
     <div class="amt-sub" id="tSub">wird deinem Ersparten gutgeschrieben</div>
     <div class="quick">${[10, 25, 50, 100, 250].map(v => `<button type="button" data-q="${v}">+${v} €</button>`).join('')}</div>
     <div class="fgroup">
-      <label class="field"><span>Ziel</span><select name="goal">${opts}<option value="">Allgemein (ohne Ziel)</option></select></label>
+      <label class="field"><span>Ziel</span><select name="goal">${S.fin.goals.length ? `<option value="" ${g0 ? '' : 'selected'}>Auf alle Sparziele verteilen</option>` : ''}${opts}${S.fin.goals.length ? '' : '<option value="">Allgemein (ohne Ziel)</option>'}</select></label>
       <label class="field"><span>Datum</span><input type="date" name="date" value="${localISO()}"></label>
       <label class="field"><span>Notiz</span><input name="note" placeholder="optional"></label>
     </div>
@@ -1829,7 +1852,14 @@ const actions = {
     if (!(a > 0)) return toast('Bitte einen Betrag eingeben');
     const amount = views.txEdit.kind() === 'out' ? -a : a;
     t.disabled = true;
-    const r = await addTx(form.goal.value || null, amount, {date: form.date.value || localISO(), note: form.note.value.trim()});
+    const extra = {date: form.date.value || localISO(), note: form.note.value.trim()};
+    if (!form.goal.value && amount > 0 && S.fin.goals.length) { // ohne Ziel → auf alle Sparziele verteilen
+      const {r, n} = await addSplitTx(amount, {...extra, note: extra.note || 'Auf alle Ziele verteilt'});
+      back(); reward(r);
+      if (n > 1) setTimeout(() => toast(`${eur(amount)} auf ${n} Sparziele verteilt`), 2500);
+      return;
+    }
+    const r = await addTx(form.goal.value || null, amount, extra);
     back(); reward(r);
     if (amount < 0) toast(`${eur(-amount)} entnommen`);
   },
